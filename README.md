@@ -33,14 +33,15 @@ npm run build        # 產生 public/tzgro-card-tycoon.html
 npm test             # 引擎測試（含七關 120 週完整路徑）＋ build 同步檢查
 ```
 
-## 部署（Cloudflare Workers）
+## 部署
 
-`wrangler.jsonc` 已設定成純靜態資產 Worker（`public/` 整包），根網址轉到遊戲頁。
+**GitHub Pages（目前使用）**：PR 合併進 `main` 後，`.github/workflows/pages.yml` 會先跑 `npm test`，通過才把 `public/` 部署上線。PR 本身只跑測試。
 
-```bash
-npm run deploy:dry   # 檢查
-npm run deploy       # 正式上線（需登入 Cloudflare）
-```
+- 遊戲：<https://vitokok-lab.github.io/GEMBOSS-GAME/>
+- v3 原型：<https://vitokok-lab.github.io/GEMBOSS-GAME/prototype/v3/>
+- repo 的 Settings → Pages → Source 必須選「GitHub Actions」。
+
+**Cloudflare Workers（備用）**：`wrangler.jsonc` 已設定成純靜態資產 Worker，`npm run deploy:dry` 檢查、`npm run deploy` 上線。
 
 ## 授權與素材
 
