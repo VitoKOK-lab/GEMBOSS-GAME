@@ -20,7 +20,9 @@ npm run dev          # 或 python3 launch.py／雙擊「啟動遊戲.command」
 | `public/` | 上線與本機啟動的目錄。`tzgro-card-tycoon.html` 由 build 產生，不要手改 |
 | `public/assets/` | 卡牌插圖（WebP）、背景音樂 |
 | `scripts/` | `build.mjs` 合併單檔、`check-build.mjs` 檢查是否同步 |
-| `docs/` | 遊戲說明、插圖提示詞、預覽截圖 |
+| `docs/` | 遊戲說明、插圖提示詞、預覽截圖、`V3-DESIGN.md`（v3 設計定案單） |
+| `public/prototype/v3/` | v3 擴散經營數值原型（獨立頁面，不影響正式遊戲）；開 <http://127.0.0.1:8766/prototype/v3/index.html> |
+| `test/` | v3 原型的行為測試與模擬玩家（`npm run sim` 看三種打法的結果） |
 
 ## 修改流程
 
