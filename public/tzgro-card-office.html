@@ -1,0 +1,401 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f3edff">
+  <title>TZGRO｜珠寶公司經營遊戲・辦公室主畫面</title>
+  <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"}}</script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Montserrat:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{--ivory:#f3edff;--paper:#fffaff;--ink:#302744;--muted:#786d90;--line:#dfd3f0;--gold:#c7974e;--wine:#743d83;--sage:#4f997e;--rose:#ffe7f2;--shadow:0 8px 24px #44325a20}
+    *{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--ivory);color:var(--ink);font-family:Montserrat,"Noto Sans TC",sans-serif}button{font:inherit;color:inherit}
+    .app{height:100dvh;min-height:620px;display:grid;grid-template-rows:72px minmax(0,1fr);background:var(--ivory)}
+    .topbar{z-index:10;display:grid;grid-template-columns:210px minmax(260px,1fr) auto;align-items:center;gap:22px;padding:0 25px;background:#fffaf4;border-bottom:1px solid var(--line);box-shadow:0 3px 16px #5c41220b}
+    .brand{display:flex;align-items:center;gap:10px}.brand-mark{width:36px;height:36px;border:1px solid #c4a273;border-radius:50%;display:grid;place-items:center;color:#986b37;background:linear-gradient(145deg,#fff9ed,#efe0ca)}.brand-mark svg{width:21px;height:21px}.brand-name{font:700 24px/1 "Cormorant Garamond",Georgia,serif;letter-spacing:2px}.brand-sub{margin-top:4px;color:#927b63;font:600 8px "Noto Sans TC",sans-serif;letter-spacing:1.7px}
+    .annual{max-width:560px;width:100%;display:grid;grid-template-columns:auto minmax(80px,1fr) auto;align-items:center;gap:12px;margin:auto}.annual-title{font:700 11px "Noto Sans TC",sans-serif;white-space:nowrap}.annual-title small{display:block;margin-top:3px;color:var(--muted);font:500 8px "Noto Sans TC",sans-serif}.bar{height:8px;border-radius:8px;background:#e9dfd2;overflow:hidden;box-shadow:inset 0 1px 2px #5e43221c}.bar i{display:block;width:28%;height:100%;border-radius:8px;background:linear-gradient(90deg,#b87f3d,#e8c983)}.annual-value{font:700 11px "Noto Sans TC",sans-serif;white-space:nowrap}.annual-value b{color:#a87938}.annual-value small{display:block;margin-top:3px;color:var(--muted);text-align:right;font:500 8px "Noto Sans TC",sans-serif}
+    .top-right{display:flex;align-items:center;gap:8px}.round-label{padding:8px 11px;border:1px solid var(--line);border-radius:12px;background:#fffdf8;font:700 10px "Noto Sans TC",sans-serif;white-space:nowrap}.round-label span{margin-left:4px;color:var(--muted);font-weight:500}.wallet{display:flex;align-items:center;gap:7px;padding:7px 12px;border-radius:20px;background:#362c25;color:#fff6e9;font-size:11px;font-weight:700;white-space:nowrap}.coin{width:20px;height:20px;display:grid;place-items:center;border:1px solid #e7c77d;border-radius:50%;color:#e9cf8f;font:700 12px Georgia,serif}
+    .game-area{min-height:0;display:grid;grid-template-columns:66px minmax(0,1fr);grid-template-rows:minmax(0,1fr) 190px;overflow:hidden}
+    .nav{grid-column:1;grid-row:1/3;z-index:7;display:flex;flex-direction:column;align-items:center;gap:8px;padding:14px 6px;background:#f0e9dd;border-right:1px solid #e4d8c7}.nav button{width:52px;min-height:53px;border:0;border-radius:13px;background:transparent;color:#82766b;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font:600 8px "Noto Sans TC",sans-serif;cursor:pointer;transition:.18s}.nav button svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}.nav button:hover,.nav button.active{background:#fffaf2;color:var(--wine);box-shadow:0 4px 14px #5f422113}.nav-gap{flex:1}
+    .office-stage{grid-column:2;grid-row:1;position:relative;min-width:0;min-height:0;overflow:hidden;background:radial-gradient(ellipse at center,#fffdf7,#eee5d7)}.office-stage:before{content:"";position:absolute;inset:0;z-index:0;background:radial-gradient(ellipse at 50% 45%,#fffdf8 0%,#f0e8dc 70%,#e7ddcf 100%)}
+    #scene{position:absolute;inset:0;z-index:1;width:100%;height:100%;display:block}.room-people{position:absolute;inset:0;z-index:3;pointer-events:none;overflow:hidden}.person{position:absolute;width:70px;height:94px;padding:0;border:0;border-radius:0;outline:0;background:transparent;appearance:none;-webkit-appearance:none;transform:translate(-50%,-100%);display:flex;flex-direction:column;align-items:center;filter:drop-shadow(0 4px 5px #39291e35);will-change:left,top;pointer-events:auto;cursor:pointer}.person-name{position:absolute;left:50%;bottom:-13px;transform:translateX(-50%);margin:0;padding:2px 6px;border:1px solid #fff3df;border-radius:8px;background:#79434a;color:#fff8ec;font:700 8px "Noto Sans TC",sans-serif;white-space:nowrap;box-shadow:0 2px 6px #3923162c}.person:hover{z-index:20!important;filter:drop-shadow(0 6px 9px #39291e55) brightness(1.05)}
+    .stage-title{position:absolute;z-index:5;left:20px;top:16px;display:flex;align-items:center;gap:10px;pointer-events:none}.stage-title h1{margin:0;font:700 15px "Noto Sans TC",sans-serif;letter-spacing:.4px}.stage-title p{margin:3px 0 0;color:#817468;font:500 8px Montserrat,"Noto Sans TC",sans-serif;letter-spacing:.5px}.live{display:flex;align-items:center;gap:6px;padding:5px 9px;border:1px solid #d8e2d2;border-radius:20px;background:#fbfff4eF;color:#5e7958;font:700 8px "Noto Sans TC",sans-serif}.live i{width:6px;height:6px;border-radius:50%;background:#6caa6a;box-shadow:0 0 0 3px #70ae7023;animation:pulse 1.7s ease-in-out infinite}@keyframes pulse{50%{box-shadow:0 0 0 6px #70ae7000}}
+    .office-switch{position:absolute;z-index:6;right:17px;top:14px;display:flex;gap:4px;padding:4px;border:1px solid #e4d6c4;border-radius:13px;background:#fffaf0eF;box-shadow:0 4px 14px #46321c12;backdrop-filter:blur(8px)}.office-switch button{height:30px;padding:0 11px;border:0;border-radius:9px;background:transparent;color:#786c5f;font:700 9px "Noto Sans TC",sans-serif;cursor:pointer}.office-switch button.active{background:#473a31;color:#fff5e6}
+    .zone{position:absolute;z-index:4;padding:5px 8px;border:1px solid #fff4e5;border-radius:10px;background:#fffaf0d9;color:#584535;box-shadow:0 3px 9px #3c2b2018;backdrop-filter:blur(5px);font:700 8px "Noto Sans TC",sans-serif;white-space:nowrap;pointer-events:none}.zone:before{content:"";display:inline-block;width:6px;height:6px;margin-right:5px;border-radius:2px;background:#bd8b4b}.zone[data-zone="選品"]:before{background:#a77a48}.zone[data-zone="影音"]:before{background:#bc6674}.zone[data-zone="營運"]:before{background:#798c72}.zone[data-zone="人資"]:before{background:#8391a0}.flight-link{position:absolute;z-index:5;left:50%;top:18px;transform:translateX(-50%);display:flex;align-items:center;gap:7px;padding:6px 10px;border:1px solid #e5d6c4;border-radius:20px;background:#fffaf0df;color:#725d48;font:600 8px "Noto Sans TC",sans-serif;white-space:nowrap;backdrop-filter:blur(8px)}.flight-line{position:relative;width:54px;border-top:1px dashed #bb9a6b}.plane{position:absolute;left:0;top:-10px;font-size:12px;animation:fly 3.8s ease-in-out infinite}@keyframes fly{0%,100%{left:0;transform:translateY(1px)}50%{left:42px;transform:translateY(-4px)}}
+    .process-strip{position:absolute;z-index:5;left:18px;bottom:13px;display:flex;align-items:center;gap:7px;padding:8px 11px;border:1px solid #e5d7c6;border-radius:13px;background:#fffaf0e9;box-shadow:var(--shadow);backdrop-filter:blur(8px)}.process-step{display:flex;align-items:center;gap:5px;color:#594b3e;font:700 8px "Noto Sans TC",sans-serif;white-space:nowrap}.process-step i{width:18px;height:18px;display:grid;place-items:center;border-radius:6px;background:#f0e6d8;color:#97704a;font:700 8px Montserrat,sans-serif;font-style:normal}.process-arrow{color:#b08a58;font-size:11px}.process-step.done i{background:#e6eee3;color:#66805d}.process-step.current i{background:#f2e1de;color:#9c5b62}
+    .command-dock{grid-column:2;grid-row:2;z-index:8;display:grid;grid-template-columns:minmax(170px,.9fr) minmax(175px,1fr) minmax(340px,2fr) 136px;gap:10px;align-items:stretch;padding:11px 13px;background:#fffaf3;border-top:1px solid var(--line);box-shadow:0 -5px 18px #4a33220c}.dock-card{min-width:0;padding:10px 11px;border:1px solid var(--line);border-radius:14px;background:#fffdf8}.dock-title{display:flex;justify-content:space-between;align-items:center;margin-bottom:7px}.dock-title b{font:700 10px "Noto Sans TC",sans-serif}.dock-title small{color:#938271;font:500 7px "Noto Sans TC",sans-serif}.revenue-main{color:#47382d;font:700 21px "Cormorant Garamond",Georgia,serif;white-space:nowrap}.revenue-main small{margin-left:4px;color:#7f8e6f;font:700 8px "Noto Sans TC",sans-serif}.mini-stats{display:flex;gap:8px;margin-top:6px}.mini-stat{flex:1;padding-top:5px;border-top:1px solid #eee4d7;color:#84786d;font:500 7px "Noto Sans TC",sans-serif}.mini-stat b{display:block;margin-top:2px;color:#43372f;font:700 10px "Noto Sans TC",sans-serif}
+    .campaign-card{position:relative;overflow:hidden;background:linear-gradient(130deg,#fff8ec,#f4e6d5)}.campaign-card:after{content:"✦";position:absolute;right:10px;top:10px;color:#d0ac74;font-size:20px;opacity:.48}.campaign-kicker{color:#99784f;font:700 7px Montserrat,sans-serif;letter-spacing:1px}.campaign-card h3{position:relative;margin:5px 0 3px;font:700 11px "Noto Sans TC",sans-serif}.campaign-card p{margin:0;color:#85786b;font:500 7px "Noto Sans TC",sans-serif}.campaign-bar{height:4px;margin-top:9px;border-radius:5px;background:#e3d4bf;overflow:hidden}.campaign-bar i{display:block;width:60%;height:100%;background:linear-gradient(90deg,#a66c39,#dfbc79)}.campaign-foot{display:flex;justify-content:space-between;margin-top:5px;color:#887867;font:500 7px "Noto Sans TC",sans-serif}.campaign-foot b{color:#6c5944}
+    .weekly{padding:9px 10px}.weekly-heading{display:flex;justify-content:space-between;align-items:center;margin-bottom:7px}.weekly-heading b{font:700 10px "Noto Sans TC",sans-serif}.weekly-heading span{color:#958575;font:500 7px "Noto Sans TC",sans-serif}.decision-groups{height:calc(100% - 20px);display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}.decision{min-width:0;padding:7px 7px 6px;border:1px solid #ebe0d2;border-radius:10px;background:#fffaf4}.decision-label{margin-bottom:5px;color:#897968;font:700 7px "Noto Sans TC",sans-serif;letter-spacing:.3px}.choice-row{display:flex;gap:3px}.choice{flex:1;min-width:0;padding:5px 2px;border:1px solid transparent;border-radius:7px;background:#f4eee5;color:#6f6255;font:600 7px "Noto Sans TC",sans-serif;white-space:nowrap;cursor:pointer;transition:.15s}.choice:hover{border-color:#d6b988}.choice[aria-pressed="true"]{border-color:#b86d72;background:#f7e8e5;color:#863e48;box-shadow:inset 0 0 0 1px #b86d7220}
+    .launch-box{display:flex;flex-direction:column;justify-content:center;gap:8px}.launch{min-height:48px;padding:0 9px;border:1px solid #d5b487;border-radius:12px;background:linear-gradient(105deg,#813e48,#a7505b);color:#fff8ec;box-shadow:0 4px 0 #633139,0 8px 13px #65354019;font:800 11px "Noto Sans TC",sans-serif;cursor:pointer;transition:filter .15s,transform .15s}.launch:hover{filter:brightness(1.08)}.launch:active{transform:translateY(2px);box-shadow:0 2px 0 #633139}.launch-note{text-align:center;color:#928373;font:500 7px/1.45 "Noto Sans TC",sans-serif}
+    .toast{position:absolute;z-index:30;left:50%;top:18px;transform:translate(-50%,-8px);padding:8px 12px;border:1px solid #dbc8ae;border-radius:12px;background:#3d3028;color:#fff4e6;box-shadow:0 10px 25px #24170f2c;font:600 9px "Noto Sans TC",sans-serif;opacity:0;pointer-events:none;white-space:nowrap;transition:.18s}.toast.show{opacity:1;transform:translate(-50%,0)}.modal{position:absolute;inset:0;z-index:40;display:none;align-items:center;justify-content:center;padding:18px;background:#29201972;backdrop-filter:blur(5px)}.modal.open{display:flex}.modal-card{width:min(370px,100%);padding:23px;border:1px solid #dcc39d;border-radius:19px;background:#fff8ec;text-align:center;box-shadow:0 20px 55px #1d120e45}.modal-card .seal{width:40px;height:40px;margin:0 auto 8px;border:1px solid #dfc394;border-radius:50%;display:grid;place-items:center;color:#946636}.modal-card h2{margin:0;font:700 16px "Noto Sans TC",sans-serif}.modal-card p{margin:8px 0 14px;color:#827366;font:500 10px/1.7 "Noto Sans TC",sans-serif}.modal-card button{height:35px;padding:0 18px;border:0;border-radius:19px;background:var(--wine);color:white;font:700 10px "Noto Sans TC",sans-serif;cursor:pointer}
+    @media(max-width:1100px) and (min-width:761px){.topbar{grid-template-columns:176px minmax(190px,1fr) auto;gap:10px;padding:0 14px}.brand-name{font-size:21px}.game-area{grid-template-columns:58px minmax(0,1fr);grid-template-rows:minmax(0,1fr) 190px}.nav{padding-inline:3px}.nav button{width:48px}.command-dock{grid-template-columns:minmax(145px,.85fr) minmax(155px,.9fr) minmax(300px,1.8fr) 118px;gap:7px;padding:9px}.dock-card{padding:8px}.decision-groups{gap:4px}.choice{font-size:6px}.launch{font-size:9px}.process-strip{left:10px;bottom:9px}.flight-link{top:56px}}
+    @media(max-width:760px){.app{min-height:600px;grid-template-rows:62px minmax(0,1fr)}.topbar{grid-template-columns:auto 1fr auto;gap:6px;padding:0 9px}.brand{gap:6px}.brand-mark{width:29px;height:29px}.brand-mark svg{width:17px;height:17px}.brand-name{font-size:18px;letter-spacing:1px}.brand-sub{font-size:6px;letter-spacing:.8px;margin-top:3px}.annual{display:none}.round-label{padding:6px 7px;font-size:8px}.round-label span{display:none}.wallet{gap:4px;padding:5px 7px;font-size:8px}.coin{width:16px;height:16px;font-size:9px}.game-area{grid-template-columns:1fr;grid-template-rows:minmax(310px,1fr) 192px 52px;overflow:auto}.nav{grid-column:1;grid-row:3;position:relative;flex-direction:row;justify-content:space-around;padding:2px 5px;border-right:0;border-top:1px solid var(--line);background:#fffaf3}.nav button{width:53px;min-height:43px;font-size:7px;gap:1px}.nav button svg{width:17px;height:17px}.nav-gap{display:none}.office-stage{grid-column:1;grid-row:1}.command-dock{grid-column:1;grid-row:2;grid-template-columns:.86fr .92fr 1.65fr 86px;gap:5px;padding:6px}.dock-card{padding:6px;border-radius:10px}.dock-title{margin-bottom:4px}.dock-title b,.weekly-heading b{font-size:8px}.dock-title small,.weekly-heading span{font-size:6px}.revenue-main{font-size:15px}.mini-stats{gap:4px;margin-top:4px}.mini-stat{font-size:6px}.mini-stat b{font-size:8px}.campaign-card h3{font-size:8px}.campaign-card p,.campaign-foot,.campaign-kicker{font-size:6px}.campaign-bar{margin-top:6px}.weekly{padding:6px}.weekly-heading{margin-bottom:4px}.decision-groups{gap:3px}.decision{padding:5px 3px;border-radius:7px}.decision-label{font-size:6px;margin-bottom:4px}.choice-row{flex-direction:column;gap:2px}.choice{padding:4px 2px;font-size:6px}.launch{min-height:42px;padding:0 4px;border-radius:9px;font-size:8px}.launch-note{font-size:6px}.stage-title{left:9px;top:9px;gap:5px}.stage-title h1{font-size:11px}.stage-title p{font-size:6px}.live{padding:4px 5px;font-size:6px}.office-switch{right:7px;top:7px;gap:2px;padding:3px}.office-switch button{height:24px;padding:0 6px;font-size:7px}.flight-link{top:auto;bottom:51px;left:50%;padding:4px 7px;font-size:6px}.flight-line{width:27px}.plane{top:-8px}.process-strip{left:6px;bottom:5px;padding:5px 6px;gap:4px;border-radius:9px}.process-step{font-size:6px;gap:3px}.process-step i{width:15px;height:15px;font-size:6px}.process-arrow{font-size:8px}.person{width:58px;height:72px}.person-name{padding:1px 4px;font-size:6px}.zone{padding:3px 5px;font-size:6px;border-radius:7px}.toast{top:7px;font-size:7px}.modal-card{padding:18px}}
+
+    /* TZGRO 彩寶奇幻工坊：色彩集中在場景與重點操作，資料區保持易讀 */
+    .topbar{background:#fffaff;border-bottom-color:#ddd0f1;box-shadow:0 4px 18px #4d397414}
+    .brand-mark{border-color:#cfaaeb;color:#7544ad;background:linear-gradient(145deg,#fff7e8,#edddff)}
+    .brand-sub{color:#86649e}
+    .annual-value b{color:#7544ad}.bar{background:#e9def7}.bar i{background:linear-gradient(90deg,#7952ca,#f18aa4,#f4be58)}
+    .round-label{background:#fcf8ff}.wallet{background:linear-gradient(120deg,#382655,#57416e);box-shadow:0 3px 10px #38265530}.coin{border-color:#f5cf70;color:#ffd976}
+    .nav{background:linear-gradient(180deg,#eee6fb,#e9e5f8);border-right-color:#d8ccee}.nav button{color:#726486}.nav button:hover,.nav button.active{background:#fffaff;color:#7544ad;box-shadow:0 4px 14px #68458b20}
+    .office-stage{background:radial-gradient(ellipse at 50% 48%,#fff9f1,#e8e0ff 72%,#d8d9f0)}
+    .office-stage:before{background:radial-gradient(ellipse at 50% 42%,#fff8ef 0%,#f0e8ff 68%,#d9dbf3 100%)}
+    .office-stage:after{content:"";position:absolute;inset:-12%;z-index:2;pointer-events:none;opacity:.72;mix-blend-mode:screen;background:radial-gradient(ellipse at 18% 22%,#48d7ca38 0%,transparent 35%),radial-gradient(ellipse at 82% 28%,#f078b948 0%,transparent 32%),radial-gradient(ellipse at 55% 82%,#8272f032 0%,transparent 40%);background-size:140% 140%;animation:prism-glow 16s ease-in-out infinite alternate}
+    @keyframes prism-glow{from{background-position:0% 35%;opacity:.52}to{background-position:100% 65%;opacity:.78}}
+    .person-name{background:linear-gradient(110deg,#654085,#874b83);border-color:#f8eaff;box-shadow:0 2px 7px #36204735}
+    .stage-title h1{color:#3b2b4f}.stage-title p{color:#786a88}.live{border-color:#c7e7d8;background:#f3fff7;color:#427b61}.live i{background:#53b786;box-shadow:0 0 0 3px #53b78626}
+    .office-switch{border-color:#ddcef0;background:#fffaffed}.office-switch button{color:#746787}.office-switch button.active{background:linear-gradient(120deg,#62417f,#80559b);color:#fff8ff}
+    .zone{border-color:#f4e9ff;background:#fffaffeb;color:#4d3d61;box-shadow:0 3px 10px #46305620}.zone:before{background:#e8a846}.zone[data-zone="選品"]:before{background:#e5aa3b}.zone[data-zone="影音"]:before{background:#de6e9a}.zone[data-zone="營運"]:before{background:#3eaf9a}.zone[data-zone="人資"]:before{background:#7777d2}
+    .flight-link{border-color:#ddcef0;background:#fffaffed;color:#624b79}.flight-line{border-color:#b48ad1}.plane{filter:drop-shadow(0 1px 3px #8e6acb66)}
+    .process-strip{border-color:#ded0ef;background:#fffaffed}.process-step{color:#514263}.process-step i{background:#f0e8fa;color:#765198}.process-step.done i{background:#e2f5e9;color:#3b8a5d}.process-step.current i{background:#f8e2f3;color:#a34d91}.process-arrow{color:#a374c5}
+    .command-dock{background:#fffaff;border-top-color:#ded2ef}.dock-card{border-color:#e3d7ef;background:#fffdfd}.revenue-main{color:#382b4b}.mini-stat{border-top-color:#eee5f5;color:#7a7087}.mini-stat b{color:#443853}
+    .campaign-card{background:linear-gradient(130deg,#fff7e8,#f4e4ff)}.campaign-kicker{color:#8a57a0}.campaign-card p{color:#796b87}.campaign-bar{background:#e9daf1}.campaign-bar i{background:linear-gradient(90deg,#42b9a3,#8a67d9,#f19b6d)}.campaign-foot{color:#786989}.campaign-foot b{color:#67477d}
+    .weekly{background:#fffdfd}.decision{border-color:#e7dcef;background:#fffbff}.choice{background:#f3edf9;color:#635773}.choice:hover{border-color:#b995db}.choice[aria-pressed="true"]{border-color:#b66ac0;background:#f7e7f8;color:#783881;box-shadow:inset 0 0 0 1px #b66ac022}
+    .launch{border-color:#e3bd75;background:linear-gradient(105deg,#7650c9,#b94f9c 54%,#e47679);box-shadow:0 4px 0 #663b79,0 8px 13px #74417425}.launch:active{box-shadow:0 2px 0 #663b79}
+    .modal-card{border-color:#d8b8eb;background:linear-gradient(145deg,#fff9f1,#fbf0ff)}.modal-card .seal{border-color:#dec7ef;color:#8356ad}.modal-card button{background:linear-gradient(110deg,#7650c9,#aa4e91)}
+    .toast{border-color:#d8c2eb;background:#3e3153;color:#fff8ff;box-shadow:0 10px 25px #24172f35}
+    @media(prefers-reduced-motion:reduce){.office-stage:after{animation:none}}
+    @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+  
+html,body,.app,.game-area{width:100%;height:100%;min-height:0!important;display:block!important;background:transparent!important}.topbar,.nav,.command-dock,.stage-title,.office-switch,.flight-link,.process-strip,.toast,.modal{display:none!important}.zone{display:none}.office-stage{width:100%;height:100%;position:absolute;inset:0}.person-name{font-size:9px;background:#263f51;padding:3px 6px;border:0}.office-stage:after{display:none}.office-stage:before{background:radial-gradient(ellipse,#f9f4e8,#e2e8e4)}.office-stage[data-office-capacity="6"] .person-name small,.office-stage[data-office-capacity="12"] .person-name small{display:none!important}.office-stage[data-office-capacity="6"] .person:hover .person-name small,.office-stage[data-office-capacity="12"] .person:hover .person-name small{display:block!important}
+</style>
+</head>
+<body>
+  <main class="app">
+    <header class="topbar">
+      <div class="brand"><div class="brand-mark"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8.5 8 4h8l4 4.5L12 20 4 8.5Z" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="m4 8.5 8 1.3 8-1.3M8 4l4 5.8L16 4" fill="none" stroke="currentColor" stroke-width="1.2"/></svg></div><div><div class="brand-name">TZGRO</div><div class="brand-sub">泰熙爾札娜珠寶</div></div></div>
+      <div class="annual"><div class="annual-title">年度營收目標<small>單一遊戲年度・珠寶事業</small></div><div class="bar"><i></i></div><div class="annual-value"><b>28%</b><small>NT$100M</small></div></div>
+      <div class="top-right"><div class="round-label">第 <b id="week">12</b> 週<span>・一月</span></div><div class="wallet"><span class="coin">$</span><span>3.42M</span></div></div>
+    </header>
+    <div class="game-area">
+      <nav class="nav" aria-label="遊戲主選單">
+        <button class="active" data-tab="公司" aria-label="公司辦公室"><svg viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5v9a1.5 1.5 0 0 1-1.5 1.5h-15A1.5 1.5 0 0 1 3 19.5v-9Z"/><path d="M9 21v-7h6v7M7 10h.01M17 10h.01"/></svg>公司</button>
+        <button data-tab="檔期" aria-label="檔期企劃"><svg viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="16" rx="2"/><path d="M7 3v4M17 3v4M3.5 9.5h17M7 13h4M7 17h7"/></svg>檔期</button>
+        <button data-tab="員工" aria-label="員工"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.3 2.6-5.5 6-5.5s6 2.2 6 5.5M17 7a3 3 0 0 1 0 5.8M17 15c2.4.1 4 1.8 4 4.2"/></svg>員工</button>
+        <button data-tab="AI專案" aria-label="AI 專案"><svg viewBox="0 0 24 24"><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1m0-12.8-2.1 2.1m-8.6 8.6-2.1 2.1"/><circle cx="12" cy="12" r="5.2"/></svg>AI 專案</button>
+        <div class="nav-gap"></div><button data-tab="月報" aria-label="月報"><svg viewBox="0 0 24 24"><path d="M4 20V11M10 20V5M16 20v-7M22 20H2"/></svg>月報</button>
+      </nav>
+      <section class="office-stage" id="officeStage" aria-label="公司辦公室 Three.js 3D 場景">
+        <canvas id="scene" aria-label="Three.js 全 3D 辦公室微縮場景"></canvas>
+        <div class="room-people" id="peopleLayer"></div>
+        <div class="stage-title"><div><h1 id="officeTitle">台灣電商辦公室</h1><p id="officeSub">TAIWAN HQ · E-COMMERCE & CONTENT</p></div><div class="live"><i></i><span id="liveText">台灣總部・16 人工作中</span></div></div>
+        <div class="office-switch" aria-label="辦公室切換"><button class="active" data-office="taiwan">台灣辦公室</button><button data-office="shenzhen">深圳辦公室・金工</button></div>
+        <div class="flight-link"><span>台灣總部</span><span class="flight-line"><b class="plane">✈</b></span><span>深圳金工區</span></div>
+        <div class="zone" data-zone="選品" style="left:36%;top:72%">選品・裸石企劃</div><div class="zone" data-zone="影音" style="left:14%;top:29%">短影音拍攝區</div><div class="zone" data-zone="營運" style="left:51%;top:25%">行銷・剪輯工作區</div><div class="zone" data-zone="人資" style="left:75%;top:49%">HR・管理支援</div>
+        <div class="process-strip" aria-label="本週訂單流程"><span class="process-step done"><i>01</i>Shopify 接單</span><span class="process-arrow">›</span><span class="process-step current"><i>02</i>深圳金工</span><span class="process-arrow">›</span><span class="process-step"><i>03</i>台灣轉運</span><span class="process-arrow">›</span><span class="process-step"><i>04</i>售後追蹤</span></div>
+      </section>
+      <section class="command-dock" aria-label="本週營運決策">
+        <section class="dock-card"><div class="dock-title"><b>一月營運</b><small>第 12 週示意資料</small></div><div class="revenue-main">NT$1.28M <small>▲ +12.4%</small></div><div class="mini-stats"><div class="mini-stat">Shopify 訂單<b>286 筆</b></div><div class="mini-stat">商品毛利率<b>40%</b></div></div></section>
+        <section class="dock-card campaign-card"><div class="campaign-kicker">CAMPAIGN · T−3 MONTHS</div><h3>春季彩寶企劃</h3><p>裸石、成品與客製款候選</p><div class="campaign-bar"><i></i></div><div class="campaign-foot"><span>選品進度</span><b>12 / 20 款</b></div></section>
+        <section class="dock-card weekly"><div class="weekly-heading"><b>本週經營策略</b><span>每個方向各選一項</span></div><div class="decision-groups">
+          <div class="decision" data-group="content"><div class="decision-label">內容・短影音 / 直播</div><div class="choice-row"><button class="choice" aria-pressed="true">短影音</button><button class="choice" aria-pressed="false">直播主題</button></div></div>
+          <div class="decision" data-group="ads"><div class="decision-label">廣告・投放優化</div><div class="choice-row"><button class="choice" aria-pressed="true">測素材</button><button class="choice" aria-pressed="false">UTM 擴量</button></div></div>
+          <div class="decision" data-group="service"><div class="decision-label">客服・熟客經營</div><div class="choice-row"><button class="choice" aria-pressed="true">訂製追蹤</button><button class="choice" aria-pressed="false">回購關懷</button></div></div>
+        </div></section>
+        <div class="launch-box"><button class="launch" id="launch">部署本週<br>策略　›</button><div class="launch-note">遊戲時間按週推進<br>控制視窗開啟時暫停</div></div>
+      </section>
+    </div>
+    <div class="toast" id="toast" role="status"></div>
+    <div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle"><div class="modal-card"><div class="seal">✦</div><h2 id="modalTitle">本週策略已部署</h2><p id="modalText">電商與營運團隊依選定方向開始本週工作。訂單、素材與售後流程會持續交接。週結算更新營收與月報進度。</p><button id="modalClose">回到辦公室</button></div></div>
+  </main>
+  <script type="module">
+    import * as THREE from 'three';
+    import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
+    import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+    const $=s=>document.querySelector(s),stage=$('#officeStage'),canvas=$('#scene'),peopleLayer=$('#peopleLayer');
+    const renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:true,powerPreference:'high-performance'});
+    renderer.setPixelRatio(Math.min(devicePixelRatio||1,2));renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.02;renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+    const scene=new THREE.Scene();scene.background=new THREE.Color('#f1eaff');
+    const ambient=new THREE.HemisphereLight(0xf5eaff,0x57436e,1.85);scene.add(ambient);
+    const sun=new THREE.DirectionalLight(0xffe3c5,2.45);sun.position.set(-7,13,9);sun.castShadow=true;sun.shadow.mapSize.set(2048,2048);sun.shadow.camera.left=-12;sun.shadow.camera.right=12;sun.shadow.camera.top=12;sun.shadow.camera.bottom=-12;sun.shadow.bias=-.0003;sun.shadow.radius=5;scene.add(sun);
+    const camera=new THREE.OrthographicCamera(-10,10,8,-8,.1,100);camera.position.set(12,13,17);camera.lookAt(0,1,0);
+    const mat=(color,roughness=.75,metalness=0)=>new THREE.MeshStandardMaterial({color,roughness,metalness});
+    const M={ivory:mat('#efe6d8'),wall:mat('#f4ede3'),wood:mat('#a8764d'),wood2:mat('#c08c5a'),oak:mat('#d5ac79'),darkwood:mat('#704834'),wine:mat('#843f48'),wine2:mat('#a65d61'),sage:mat('#83917b'),green:mat('#537452'),leaf:mat('#708d60'),gold:mat('#bf9252',.34,.58),goldlight:mat('#dfbd7b',.3,.48),metal:mat('#554d46',.42,.55),screen:mat('#263848',.28,.08),paper:mat('#f8f3e9'),skin:mat('#e9b99a'),hair1:mat('#382920'),hair2:mat('#49352b'),navy:mat('#354b60'),pink:mat('#bd777b'),white:mat('#fff9ed'),black:mat('#252321',.34),tile:mat('#d7bf9f')};
+    function grainTexture(base,seed){const c=document.createElement('canvas');c.width=512;c.height=512;const x=c.getContext('2d');x.fillStyle=base;x.fillRect(0,0,512,512);let n=seed*7919;for(let i=0;i<130;i++){n=(n*16807)%2147483647;const y=n%512;x.strokeStyle=`rgba(72,43,25,${.012+(n%7)*.002})`;x.lineWidth=1+(n%2);x.beginPath();x.moveTo(0,y);x.bezierCurveTo(120,y+(n%13)-6,300,y-(n%11),512,y+(n%15)-7);x.stroke();}const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;t.wrapS=t.wrapT=THREE.RepeatWrapping;t.anisotropy=8;return t;}
+    for(const [m,c,i] of [[M.wood,'#a8764d',1],[M.wood2,'#c08c5a',2],[M.oak,'#d5ac79',3],[M.darkwood,'#704834',4]]){m.map=grainTexture(c,i);m.needsUpdate=true;}
+    const roomRoot=new THREE.Group();scene.add(roomRoot);let propRoot=null;const gltfLoader=new GLTFLoader();let modelLoadId=0,magicCrystals=[];const actorRoot=new THREE.Group();scene.add(actorRoot);let currentOffice='taiwan',zoneAnchors=[];const avatarCache=[];
+    const cityCanvas=document.createElement('canvas');cityCanvas.width=1280;cityCanvas.height=640;
+    const cityTexture=new THREE.CanvasTexture(cityCanvas);cityTexture.colorSpace=THREE.SRGBColorSpace;cityTexture.anisotropy=8;
+    const cityMaterial=new THREE.MeshBasicMaterial({map:cityTexture,side:THREE.DoubleSide,toneMapped:false});
+    const interiorLights=[];let lastLightPhase='';
+    function drawCity(hour){
+      const ctx=cityCanvas.getContext('2d'),w=cityCanvas.width,h=cityCanvas.height,night=hour>=18.5||hour<6,dusk=hour>=16.5&&hour<18.5;
+      const sky=ctx.createLinearGradient(0,0,0,h);if(night){sky.addColorStop(0,'#131b37');sky.addColorStop(.55,'#31415c');sky.addColorStop(1,'#b0807d');}else if(dusk){sky.addColorStop(0,'#65779d');sky.addColorStop(.55,'#dc9b91');sky.addColorStop(1,'#f0c2a3');}else{sky.addColorStop(0,'#82b3cc');sky.addColorStop(.62,'#c6dce2');sky.addColorStop(1,'#f1e6d2');}ctx.fillStyle=sky;ctx.fillRect(0,0,w,h);
+      if(night){for(let i=0;i<55;i++){const x=(i*491+41)%w,y=(i*211+59)%270;ctx.globalAlpha=.24+(i%5)*.14;ctx.fillRect(x,y,i%7===0?3:1.5,i%7===0?3:1.5);}ctx.globalAlpha=1;}else{const glow=ctx.createRadialGradient(1010,120,10,1010,120,175);glow.addColorStop(0,dusk?'#ffebcc':'#fff7db');glow.addColorStop(1,'#ffffff00');ctx.fillStyle=glow;ctx.fillRect(810,0,400,350);}
+      // Layered skyline, with each distant facade receiving its own windows and roof line.
+      for(let layer=0;layer<3;layer++){const bottom=470+layer*38;for(let i=0;i<18;i++){const bx=i*83-50+layer*29,bw=48+(i*19+layer*13)%48,bh=105+(i*47+layer*71)%185,top=bottom-bh;ctx.fillStyle=(night?['#253149','#33425a','#46516a']:dusk?['#7f8390','#93909a','#aba49c']:['#98aeb5','#b6c4c7','#d2d0c7'])[layer];ctx.fillRect(bx,top,bw,bh);ctx.fillStyle=night?'#161f34':'#82979d';ctx.fillRect(bx-3,top-7,bw+6,7);for(let wx=bx+9;wx<bx+bw-5;wx+=14)for(let wy=top+13;wy<bottom-8;wy+=22){const lit=(i*7+wx+wy+layer*11)%5<2;ctx.fillStyle=night?(lit?'#f4d49e':'#43546a'):dusk?(lit?'#edd8ba':'#94aab5'):'#7d9ca9';ctx.fillRect(wx,wy,6,9);}}}
+      ctx.fillStyle=night?'#1d2a36':'#6b907d';ctx.fillRect(0,526,w,114);
+      for(let i=0;i<24;i++){const x=(i*111+23)%w,y=514+(i*37)%72,r=24+i%4*7;ctx.fillStyle=night?['#263f3a','#1d3837','#304b40'][i%3]:['#577b61','#71946d','#486e59'][i%3];ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fill();ctx.fillRect(x-3,y,r*.2,80);}
+      ctx.fillStyle=night?'#252938':'#777b7a';ctx.fillRect(0,592,w,48);ctx.fillStyle=night?'#c9ad82':'#e3dbbe';for(let x=35;x<w;x+=120)ctx.fillRect(x,611,45,3);
+      for(let i=0;i<7;i++){const x=i*205+50;ctx.fillStyle='#3b4144';ctx.fillRect(x,500,4,95);ctx.fillStyle=night?'#ffd89c':'#ebf0de';ctx.beginPath();ctx.arc(x+2,499,night?7:4,0,Math.PI*2);ctx.fill();if(night){const g=ctx.createRadialGradient(x,500,0,x,500,50);g.addColorStop(0,'#ffdb9580');g.addColorStop(1,'#ffdb9500');ctx.fillStyle=g;ctx.fillRect(x-50,450,100,100);}}
+      cityTexture.needsUpdate=true;scene.background.set(night?'#1e253c':dusk?'#b99da1':'#dce6e6');sun.intensity=night?.28:dusk?1.15:2.35;ambient.intensity=night?.84:dusk?1.35:1.72;for(const light of interiorLights)light.intensity=night?10:dusk?6:3.2;
+    }
+    function updateEnvironment(){const [h,m]=(workday.time||'10:00').split(':').map(Number),hour=h+(m||0)/60,phase=hour>=18.5?'night':hour>=16.5?'dusk':'day';if(phase===lastLightPhase)return;lastLightPhase=phase;drawCity(hour);stage.dataset.lighting=phase;}
+    const rounded=(parent,w,h,d,x,y,z,material,r=.06)=>{const g=new RoundedBoxGeometry(w,h,d,3,Math.min(r,w/4,h/4,d/4));const m=new THREE.Mesh(g,material);m.position.set(x,y,z);m.castShadow=true;m.receiveShadow=true;parent.add(m);return m};
+    const plainBox=(parent,w,h,d,x,y,z,material,cast=true)=>{const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),material);m.position.set(x,y,z);m.castShadow=cast;m.receiveShadow=true;parent.add(m);return m};
+    const sphere=(parent,r,x,y,z,material,sx=1,sy=1,sz=1)=>{const m=new THREE.Mesh(new THREE.SphereGeometry(r,32,24),material);m.position.set(x,y,z);m.scale.set(sx,sy,sz);m.castShadow=true;m.receiveShadow=true;parent.add(m);return m};
+    const cyl=(parent,rt,rb,h,x,y,z,material,seg=16)=>{const m=new THREE.Mesh(new THREE.CylinderGeometry(rt,rb,h,seg),material);m.position.set(x,y,z);m.castShadow=true;m.receiveShadow=true;parent.add(m);return m};
+    const link=(parent,a,b,r,material)=>{const v1=new THREE.Vector3(...a),v2=new THREE.Vector3(...b),dir=v2.clone().sub(v1),g=new THREE.CapsuleGeometry(r,Math.max(.01,dir.length()-2*r),4,8),m=new THREE.Mesh(g,material);m.position.copy(v1.add(v2).multiplyScalar(.5));m.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),dir.normalize());m.castShadow=true;m.receiveShadow=true;parent.add(m);return m};
+    const addPlant=(x,z,scale=1)=>{const g=new THREE.Group();g.position.set(x,0,z);(propRoot||roomRoot).add(g);cyl(g,.22*scale,.29*scale,.38*scale,0,.19*scale,0,M.paper);cyl(g,.2*scale,.22*scale,.06*scale,0,.39*scale,0,M.gold,24);for(let i=0;i<9;i++){const a=i*Math.PI*2/9,lean=.24+((i%3)*.06),leaf=sphere(g,.18*scale,Math.cos(a)*lean,.92*scale+(i%3)*.09*scale,Math.sin(a)*lean,M.leaf,.62,1.8,.58);leaf.rotation.z=-Math.cos(a)*.38;leaf.rotation.x=Math.sin(a)*.38;link(g,[0,.38*scale,0],[Math.cos(a)*lean,.77*scale,Math.sin(a)*lean],.018*scale,M.green);}for(let i=0;i<3;i++)cyl(g,.018*scale,.025*scale,.65*scale,Math.cos(i*2.1)*.11*scale,.72*scale,Math.sin(i*2.1)*.11*scale,M.green,8);return g;};
+    function makeWindowView(seed){const c=document.createElement('canvas');c.width=512;c.height=288;const x=c.getContext('2d'),sky=x.createLinearGradient(0,0,0,288);sky.addColorStop(0,'#c8d9dc');sky.addColorStop(.42,'#e7e2d4');sky.addColorStop(.7,'#d4d2bd');sky.addColorStop(1,'#9dad91');x.fillStyle=sky;x.fillRect(0,0,512,288);x.fillStyle='rgba(248,239,218,.48)';x.fillRect(0,205,512,83);for(let i=0;i<22;i++){const xx=(i*43+seed*67)%560-20,hh=38+(i*31)%105;x.fillStyle=['#708c72','#8fa183','#a6ad8b','#627b69'][i%4];x.beginPath();x.ellipse(xx,224-hh/2,22+(i%4)*8,hh/2,0,0,Math.PI*2);x.fill();}x.filter='blur(9px)';for(let i=0;i<15;i++){const xx=(i*69+seed*38)%540-14,yy=45+(i*29)%145;x.fillStyle='rgba(255,248,222,.2)';x.beginPath();x.ellipse(xx,yy,25+(i%4)*8,10+(i%3)*5,0,0,Math.PI*2);x.fill();}x.filter='none';const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;return t;}
+    function makeRoomShellProcedural(kind){
+      roomRoot.clear();propRoot=new THREE.Group();propRoot.position.y=.325;roomRoot.add(propRoot);
+      rounded(roomRoot,15.6,.4,12,-.1,-.1,-.05,M.darkwood,.18);rounded(roomRoot,15.2,.16,11.6,-.1,.17,-.05,M.oak,.1);
+      const floor=plainBox(roomRoot,14.9,.09,11.3,-.1,.28,-.05,M.oak,false);
+      const seam=mat('#bb956d');for(let z=-5.25;z<=5.1;z+=.82)plainBox(roomRoot,14.82,.007,.008,-.1,.333,z,seam,false);
+      for(let x=-6.55;x<=6.5;x+=2.1)for(let z=-4.9;z<5;z+=1.64)plainBox(roomRoot,.008,.007,.81,x,.333,z,M.wood2,false);
+      rounded(roomRoot,14.95,3.35,.22,-.1,1.94,-5.72,M.wall,.07);rounded(roomRoot,.22,3.35,11.3,-7.42,1.94,-.05,M.wall,.07);
+      rounded(roomRoot,15.05,.19,.32,-.1,.47,-5.54,M.wood,.04);rounded(roomRoot,.32,.19,11.35,-7.23,.47,-.05,M.wood,.04);
+      // cutaway posts, warm timber beams, and broad framed windows
+      for(const x of [-7.15,-3.8,.1,3.9,7.1]){plainBox(roomRoot,.13,3.4,.18,x,1.98,-5.58,M.wood);plainBox(roomRoot,.16,3.4,.18,-7.28,1.98,x*.74,M.wood);}
+      plainBox(roomRoot,15.15,.2,.28,-.1,3.65,-5.57,M.darkwood);plainBox(roomRoot,.28,.2,11.5,-7.28,3.65,-.05,M.darkwood);
+      // back windows between the timbers
+      for(const [i,x] of [-5.7,-1.85,2.0,5.5].entries()){const view=new THREE.Mesh(new THREE.PlaneGeometry(2.38,1.43),new THREE.MeshBasicMaterial({map:makeWindowView(i),side:THREE.DoubleSide}));view.position.set(x,2.42,-5.575);roomRoot.add(view);plainBox(roomRoot,2.55,.075,.11,x,3.17,-5.46,M.wood);plainBox(roomRoot,2.55,.075,.11,x,1.67,-5.46,M.wood);plainBox(roomRoot,.075,1.55,.11,x-1.27,2.42,-5.46,M.wood);plainBox(roomRoot,.075,1.55,.11,x+1.27,2.42,-5.46,M.wood);plainBox(roomRoot,.055,1.45,.11,x,2.42,-5.44,M.wood2);}
+      // suspended warm practical lights
+      for(const x of [-4.4,-.4,3.8]){cyl(roomRoot,.025,.025,.58,x,3.32,-1.3,M.metal,10);const shade=new THREE.Mesh(new THREE.ConeGeometry(.27,.2,20,1,true),M.gold);shade.position.set(x,3.03,-1.3);shade.rotation.x=Math.PI;roomRoot.add(shade);const light=new THREE.PointLight(0xffd89d,24,5,2);light.position.set(x,2.93,-1.3);light.castShadow=false;roomRoot.add(light);}
+      addPlant(-6.5,-4.8,.9);addPlant(6.55,-4.75,.88);addPlant(-6.5,4.45,.8);addPlant(6.45,4.4,.8);
+      // shelving with jewelry boxes, books, and warm display spots
+      shelf(-5.8,-5.1,2.3);shelf(5.9,-5.1,2.3);
+      if(kind==='shenzhen'){
+        // visible low partition differentiates the office from the jewelry workshop
+        rounded(roomRoot,.12,1.45,5.2,-.8,.98,.65,M.wood,.04);for(let z=-1.75;z<=3.2;z+=.38)plainBox(roomRoot,.07,1.3,.045,-.72,1.0,z,M.oak,false);
+        const sign=rounded(roomRoot,3.2,.7,.16,2.4,2.9,-5.43,M.ivory,.05);rounded(roomRoot,1.6,.08,.18,2.4,2.9,-5.32,M.gold,.025);
+        workshop(1.45,-3.65);workshop(4.35,-3.65);packingTable(4.85,1.25);desk(-4.8,-3.65,2.0);desk(-2.45,-3.65,1.9);gemTable(-4.6,1.25);
+        zoneAnchors=[['大陸選品・接單',new THREE.Vector3(-6.1,1.35,1.95)],['金工製作 01',new THREE.Vector3(1.6,2.0,-4.3)],['金工製作 02',new THREE.Vector3(5.4,2.0,-4.3)],['包裝・跨境集貨',new THREE.Vector3(7.4,1.35,3.1)]];
+      } else {
+        desk(-3.5,-3.7,2.1);desk(-.75,-3.7,2.1);desk(2.0,-3.7,2.1);smallOfficeDesk(4.95,-2.5);
+        gemTable(-2.8,.6);filmRig(-5.55,.45);displayWall(5.7,-3.45);
+        zoneAnchors=[['商品企劃・珠寶展示',new THREE.Vector3(-8.25,1.5,.8)],['短影音・直播棚',new THREE.Vector3(8.0,1.6,5.75)],['行銷・剪輯工作區',new THREE.Vector3(-1.0,2.0,-1.75)],['營運・管理支援',new THREE.Vector3(2.0,1.3,2.55)]];
+      }
+      // polished brass floor inlays, tactile rugs, and room threshold
+      plainBox(roomRoot,14.5,.018,.045,-.1,.36,5.34,M.gold,false);plainBox(roomRoot,.045,.018,10.6,-7.2,.36,-.02,M.gold,false);
+      addRug(-.75,-2.62,8.4,2.25);addLounge(3.55,2.55);
+      if(kind==='taiwan'){addRug(-2.8,.6,5.0,3.0);addRug(-5.55,.45,2.5,2.5);}else{addRug(2.8,-2.7,6.1,2.5);addRug(-4.6,1.25,3.4,2.7);}
+    }
+    function addPrismAccents(kind){
+      magicCrystals=[];
+      const points=kind==='shenzhen'?[[-4.55,1.95,1.1,'#45d2c2'],[1.42,1.88,-3.05,'#a874f2'],[4.85,1.9,1.18,'#ff8d9c']]:[[-2.8,1.88,.4,'#55d4c0'],[-5.6,1.82,.35,'#ff83a9'],[5.62,2.15,-3.25,'#9c79f2']];
+      for(const [x,y,z,color] of points){
+        const group=new THREE.Group();group.position.set(x,y,z);roomRoot.add(group);
+        const jewel=new THREE.Mesh(new THREE.OctahedronGeometry(.4,0),new THREE.MeshPhysicalMaterial({color,emissive:color,emissiveIntensity:.28,metalness:.22,roughness:.16,clearcoat:1,clearcoatRoughness:.12}));jewel.scale.set(.82,1.45,.82);jewel.rotation.y=Math.PI/4;jewel.castShadow=true;group.add(jewel);
+        const halo=new THREE.Mesh(new THREE.TorusGeometry(.54,.018,8,36),new THREE.MeshStandardMaterial({color:'#f6d68b',metalness:.75,roughness:.24,emissive:'#8b5ca4',emissiveIntensity:.14}));halo.rotation.x=Math.PI/2.55;group.add(halo);
+        const light=new THREE.PointLight(new THREE.Color(color),3.8,3.6,2);light.position.y=.12;group.add(light);
+        magicCrystals.push({group,jewel,phase:magicCrystals.length*2.1,baseY:y});
+      }
+    }
+    function updatePrisms(now){for(const c of magicCrystals){c.group.position.y=c.baseY+Math.sin(now*.0012+c.phase)*.045;c.jewel.rotation.y=Math.PI/4+Math.sin(now*.0007+c.phase)*.12;}}
+// Visual work cycles follow roles; busy weeks are driven by actual simulated order volume.
+let workBusy=false,workOrders=0,workday={active:false,action:'idle',cycle:-1,weekday:'',time:'10:00'},staffMoods={};
+function workBench(x,z,kind){
+ rounded(propRoot,2.25,.13,.9,x,1.02,z,M.oak,.05);
+ for(const dx of [-.95,.95])plainBox(propRoot,.12,.85,.6,x+dx,.58,z,M.darkwood);
+ if(kind==='select'){
+  rounded(propRoot,1.4,.05,.65,x,1.12,z,M.navy,.03);
+  for(let i=0;i<8;i++){const gem=new THREE.Mesh(new THREE.OctahedronGeometry(.105),mat(['#b14f9b','#3c99bb','#e5b341','#6bba96'][i%4],.2,.35));gem.position.set(x-.5+(i%4)*.33,1.23,z-.17+Math.floor(i/4)*.32);propRoot.add(gem);}
+  rounded(propRoot,.32,.02,.45,x+.86,1.12,z,M.paper,.02);
+ }else{
+  rounded(propRoot,.7,.035,.56,x,1.12,z,M.paper,.02);
+  for(const dx of [-.35,.35])rounded(propRoot,.035,.26,.58,x+dx,1.26,z,M.wood2,.01);
+  for(const dz of [-.28,.28])rounded(propRoot,.7,.26,.035,x,1.26,z+dz,M.wood2,.01);
+  rounded(propRoot,.4,.04,.3,x-.8,1.13,z,M.wine,.02);
+ }
+}
+function initRole(p,index){
+ const role=p.role||'';p.job=index===0||/選品|採購/.test(role)?'select':index===2||/出貨|包裝|特助/.test(role)?'pack':'reply';p.roleIndex=index;p.cycleAt=sceneTime;p.workLabel='';p.el.querySelector('.person-name').firstChild.textContent=p.name+'｜'+(index===0?'選品':index===1?'客服':index===2?'出貨':/HR|人資/.test(role)?'人資':/剪輯|影音/.test(role)?'剪輯':/出貨|包裝/.test(role)?'出貨':/行銷/.test(role)?'行銷':'營運');
+ const q=workstation(index);p.floor=q.floor||0;p.floorY=q.floorY||0;propRoot=floorProps[p.floor]||propRoot;p.x=q.x;p.z=q.z+1;p.avatar.root.position.set(p.x,p.floorY+.325,p.z);p.home={x:p.x,z:p.z};p.delivery=null;p.activityLabel='準備工作';p.activityKind=p.job;p.activityAt=sceneTime;p.activityCycle=0;p.walkQueue=[];p.carrying='';p.nextAt=sceneTime+2000;
+ setPose(p,p.job==='reply'?'sit':'work');
+ const held=new THREE.Group();p.avatar.root.add(held);p.held=held;
+ const jewel=new THREE.Mesh(new THREE.OctahedronGeometry(.11),mat('#aa4c94',.2,.35));held.add(jewel);p.heldGem=jewel;
+ p.heldBox=rounded(held,.43,.24,.32,0,0,0,M.wood2,.025);rounded(p.heldBox,.32,.01,.11,0,.125,0,M.paper,.005);
+ p.readyBox=rounded(propRoot,.42,.24,.32,q.x+.8,1.22,q.z,M.wood2,.025);rounded(p.readyBox,.32,.01,.11,0,.125,0,M.paper,.005);p.readyBox.visible=false;p.dispatchBox=rounded(roomRoot,.43,.24,.32,q.x+.85,p.floorY+.53,q.z+1.1,M.wood2,.025);p.dispatchBox.visible=false;
+ const bubble=document.createElement('small');bubble.style.cssText='display:block;color:#ffefb7;font-size:8px;margin-top:1px;line-height:1.2';p.el.querySelector('.person-name').append(bubble);p.workBubble=bubble;
+}
+function roleWork(now){
+ for(const p of activePeople){
+  if(!p.onShift||p.attendancePath)continue;
+  const a=p.avatar,walking=!!p.motion,job=p.activityKind||p.job,phase=(now-p.activityAt)/7400;
+  if(walking){p.held.visible=!!p.carrying;p.heldGem.visible=p.carrying==='gem';p.heldBox.visible=p.carrying==='box';p.held.position.set(0,1.08,.48);p.readyBox.visible=false;}
+  else{
+   const lift=Math.max(0,Math.sin(Math.PI*Math.min(1,Math.max(0,phase)))),active=job==='select'||job==='pack';
+   p.held.visible=active;p.heldGem.visible=job==='select';p.heldBox.visible=job==='pack';
+   p.held.position.set(Math.sin(now*.0014)*.08,1.03+lift*.27,.62-lift*.2);
+   p.readyBox.visible=job==='pack'&&phase>.8;
+   const arms=a.pose==='sit'?a.sitArms:a.standArms;
+   arms.forEach((arm,i)=>{arm.rotation.x=job==='reply'?-.72+Math.sin(now*.0084+i*2)*.14:-.58+lift*.38;arm.rotation.z=(i===0?1:-1)*(.1+lift*.14);});
+  }
+  p.workBubble.textContent=p.activityLabel;p.el.setAttribute('aria-label',p.name+'：'+p.activityLabel);
+  p.el.dataset.job=job;p.el.dataset.phase=p.activityLabel;p.el.dataset.worldPosition=p.x.toFixed(3)+','+p.z.toFixed(3);
+ }
+ syncLabels();
+}
+
+    let officeLevel=0,floorProps=[];
+    function officeLayout(){const columns=3,rows=officeLevel===0?1:2,floors=officeLevel===2?2:1,width=columns*2.8+1,depth=rows*3.5+2,floorHeight=officeLevel===2?5.0:3.65;return {columns,rows,floors,width,depth,floorHeight,capacity:columns*rows*floors};}
+    function workstation(i){const {columns,rows,depth,floorHeight}=officeLayout(),perFloor=columns*rows,floor=Math.floor(i/perFloor),local=i%perFloor;return {x:(local%columns-(columns-1)/2)*2.8,z:-depth/2+1+Math.floor(local/columns)*3.5,floor,floorY:floor*floorHeight};}
+    function makeRoomShell(kind){
+      roomRoot.clear();magicCrystals=[];zoneAnchors=[];floorProps=[];interiorLights.length=0;lastLightPhase='';
+      const {width:w,depth:d,columns,rows,floors,floorHeight}=officeLayout();
+      for(let floor=0;floor<floors;floor++){
+        const base=floor*floorHeight,wallH=floors===2?4.45:3.1,wallMid=base+.33+wallH/2,beamY=base+.34+wallH;
+        rounded(roomRoot,w,.32,d,0,base+.16,0,M.oak,.13);
+        for(let i=0;i<Math.floor(d/.42);i++)plainBox(roomRoot,w-.1,.008,.012,0,base+.326,-d/2+.15+i*.42,M.wood,false);
+        // One continuous city panorama sits beyond floor-to-ceiling glazing.
+        const panorama=new THREE.Mesh(new THREE.PlaneGeometry(w+1.6,wallH+.2),cityMaterial);panorama.position.set(0,wallMid,-d/2-.72);panorama.receiveShadow=false;roomRoot.add(panorama);
+        const glazing=new THREE.MeshPhysicalMaterial({color:'#c5e8ed',transparent:true,opacity:.13,roughness:.12,metalness:.04,depthWrite:false,side:THREE.DoubleSide});
+        const glass=new THREE.Mesh(new THREE.PlaneGeometry(w-.25,wallH-.16),glazing);glass.position.set(0,wallMid,-d/2+.02);glass.receiveShadow=false;roomRoot.add(glass);
+        rounded(roomRoot,w,.2,.28,0,beamY,-d/2,M.darkwood,.035);rounded(roomRoot,w,.15,.29,0,base+.42,-d/2,M.wood,.025);
+        for(let i=0;i<=5;i++){const x=-w/2+i*w/5;plainBox(roomRoot,.075,wallH,.22,x,wallMid,-d/2+.08,i===0||i===5?M.darkwood:M.goldlight);}
+        plainBox(roomRoot,w,.065,.15,0,base+.33+wallH*.53,-d/2+.1,M.goldlight);
+        rounded(roomRoot,.16,wallH,d,-w/2,wallMid,0,M.ivory,.04);
+        for(let j=0;j<5;j++)plainBox(roomRoot,.055,wallH,.1,-w/2+.11,wallMid,-d/2+.7+j*(d-.9)/4,M.wood2);
+        const warm=new THREE.PointLight(0xffd0a0,3.2,9,1.2);warm.position.set(0,base+wallH-.2,-d/2+1.4);roomRoot.add(warm);interiorLights.push(warm);
+        for(const x of [-2.8,0,2.8]){plainBox(roomRoot,.04,.3,.04,x,beamY-.18,-1,M.metal,false);const shade=new THREE.Mesh(new THREE.ConeGeometry(.25,.18,16,1,true),M.goldlight);shade.rotation.x=Math.PI;shade.position.set(x,beamY-.36,-1);roomRoot.add(shade);const bulb=new THREE.Mesh(new THREE.SphereGeometry(.09,12,8),new THREE.MeshBasicMaterial({color:'#ffdfab'}));bulb.position.set(x,beamY-.48,-1);roomRoot.add(bulb);}
+        const group=new THREE.Group();group.position.y=base+.325;roomRoot.add(group);floorProps.push(group);propRoot=group;
+        for(let local=0;local<columns*rows;local++){const q=workstation(floor*columns*rows+local);if(local===0&&floor===0)workBench(q.x,q.z,'select');else if(local===columns*rows-1)workBench(q.x,q.z,'pack');else desk(q.x,q.z,2.25);}
+        addPlant(-w/2+.55,d/2-.65,.8);addPlant(w/2-.55,-d/2+.5,.65);
+        rounded(propRoot,1.6,.12,.7,0,1.02,d/2-.5,M.oak,.05);
+        for(const x of [-.65,.65])plainBox(propRoot,.08,.8,.5,x,.58,d/2-.5,M.darkwood);
+        for(let i=0;i<3;i++)rounded(propRoot,.3,.2,.27,-.45+i*.4,1.19,d/2-.5,M.ivory,.02);
+        rounded(propRoot,.82,.7,.52,w/2-1.15,.68,d/2-.5,M.wood2,.06);rounded(propRoot,.77,.07,.48,w/2-1.15,1.08,d/2-.5,M.paper,.025);for(let n=0;n<3;n++)rounded(propRoot,.24,.18,.2,w/2-1.4+n*.25,1.22,d/2-.5,M.oak,.02);
+        // Open-front stair run at the right edge links the floors in the cutaway.
+        if(floor===0&&floors===2){for(let step=0;step<12;step++){const rise=(step+1)*floorHeight/12,z=d/2-.4-step*.43;plainBox(roomRoot,.9,.11,.48,w/2+.62,base+rise,z,step%2?M.oak:M.wood,false);}plainBox(roomRoot,1.0,.14,1.0,w/2+.62,floorHeight-.03,-d/2+.55,M.oak,false);}
+        const tagY=base+1.2;zoneAnchors.push([floors===2?(floor===0?'1F｜選品・客服':'2F｜行銷・營運'):(officeLevel===0?'1F｜三人起步':'1F｜公司工作區'),new THREE.Vector3(-w/2+1.15,tagY,d/2-.4)]);
+      }
+      if(floors===1){zoneAnchors.push(['1F｜客人詢問',new THREE.Vector3(w/2-1.1,2.65,-d/2+.45)],['1F｜包裝出貨',new THREE.Vector3(w/2-1.1,2.3,d/2-.65)],['1F｜商品與選品',new THREE.Vector3(-w/2+1.2,2.4,d/2-.65)]);}
+      else{zoneAnchors.push(['1F｜訂單・包裝出貨',new THREE.Vector3(w/2-1.1,2.65,d/2-.65)],['2F｜內容・客服',new THREE.Vector3(w/2-1.1,floorHeight+2.65,-d/2+.45)]);}
+      stage.dataset.officeCapacity=columns*rows*floors;resize();
+    }
+    function addRug(x,z,w,d){rounded(roomRoot,w,.035,d,x,.385,z,M.paper,.13);rounded(roomRoot,w-.22,.012,d-.22,x,.408,z,M.ivory,.1);const trim=mat('#c5a779');plainBox(roomRoot,w-.42,.008,.018,x,.418,z-d/2+.22,trim,false);plainBox(roomRoot,w-.42,.008,.018,x,.418,z+d/2-.22,trim,false);}
+    function addLounge(x,z){rounded(roomRoot,3.7,.045,2.45,x,.39,z,M.paper,.15);rounded(roomRoot,1.6,.7,.75,x,.9,z-.35,M.sage,.16);rounded(roomRoot,1.35,.16,.58,x,.69,z+.18,M.sage,.12);for(const dx of [-.62,.62])rounded(roomRoot,.25,.58,.7,x+dx,1,z+.08,M.sage,.12);rounded(roomRoot,.72,.1,.57,x,.48,z+.7,M.oak,.1);for(const dx of [-.25,.25])plainBox(roomRoot,.05,.26,.05,x+dx,.27,z+.67,M.darkwood);rounded(roomRoot,.8,.12,.58,x,.66,z+1.25,M.oak,.1);cyl(roomRoot,.035,.04,.25,x,.45,z+1.25,M.darkwood,12);addPlant(x+1.6,z-.2,.8);}
+    function shelf(x,z,h){rounded(propRoot,2.0,h,.32,x,h/2+.35,z,M.wood,.04);for(let y=.7;y<h+.2;y+=.72){plainBox(propRoot,1.9,.08,.62,x,y,z+.18,M.oak);for(let i=0;i<4;i++){const bx=x-.72+i*.47;rounded(propRoot,.28,.36,.12,bx,y+.22,z+.06,i%2?M.wine:M.navy,.025);}}for(const dx of [-.72,.72])plainBox(propRoot,.08,h,.64,x+dx,h/2+.35,z+.17,M.darkwood);}
+    function desk(x,z,w=2.25){const d=.9;rounded(propRoot,w,.13,d,x,1.02,z,M.oak,.055);for(const dx of [-w/2+.12,w/2-.12])for(const dz of [-d/2+.1,d/2-.1])plainBox(propRoot,.11,.72,.11,x+dx,.56,z+dz,M.darkwood);rounded(propRoot,.72,.54,.74,x-w*.28,.68,z-.03,M.wood,.035);for(const y of [.57,.72])rounded(propRoot,.68,.035,.66,x-w*.28,y,z+.02,M.oak,.015);computer(x,z-.27);keyboard(x,z+.12);cyl(propRoot,.12,.13,.16,x-w*.38,1.18,z+.05,M.ivory,20);cyl(propRoot,.105,.11,.018,x-w*.38,1.27,z+.05,M.gold,20);for(let i=0;i<3;i++)cyl(propRoot,.008,.008,.22,x-w*.38-.04+i*.04,1.34,z+.05,mat(['#8b5d43','#667883','#9c7454'][i],.55),8);rounded(propRoot,.18,.025,.14,x+w*.36,1.11,z+.1,M.metal,.03);chair(x,z+1.0);}
+    function smallOfficeDesk(x,z){rounded(propRoot,1.7,.13,.9,x,1.0,z,M.wood2,.06);for(const dx of [-.7,.7])plainBox(propRoot,.09,.75,.1,x+dx,.54,z,M.darkwood);computer(x,z-.28);keyboard(x,z+.1);chair(x,z+1.0);}
+    function computer(x,z){rounded(propRoot,.92,.56,.11,x,1.48,z,M.black,.04);rounded(propRoot,.82,.43,.025,x,1.5,z+.065,M.paper,.025);plainBox(propRoot,.11,.25,.1,x,1.12,z,M.metal);rounded(propRoot,.56,.055,.27,x,1.08,z+.2,M.metal,.025);for(let i=0;i<4;i++){rounded(propRoot,.46,.055,.018,x+(i%2?.12:-.12),1.65-i*.09,z+.09,i%2?M.sage:M.navy,.015);}}
+    function keyboard(x,z){rounded(propRoot,.5,.035,.2,x,1.1,z,M.paper,.02);for(let i=0;i<7;i++)plainBox(propRoot,.018,.012,.12,x-.21+i*.07,1.125,z,M.wood,false);}
+    function chair(x,z){const g=new THREE.Group();g.position.set(x,0,z);propRoot.add(g);cyl(g,.32,.31,.15,0,.66,0,M.wine);rounded(g,.68,.16,.66,0,.65,0,M.wine,.11);rounded(g,.65,.72,.16,0,1.03,.27,M.wine,.11);for(const dx of [-.24,.24]){cyl(g,.035,.04,.52,dx,.37,.02,M.metal,10);cyl(g,.035,.035,.5,dx,.37,.02,M.metal,10).rotation.z=Math.PI/2;}cyl(g,.07,.11,.38,0,.38,0,M.metal);for(let i=0;i<5;i++){const a=i*2*Math.PI/5;cyl(g,.025,.025,.28,Math.cos(a)*.2,.18,Math.sin(a)*.2,M.metal,8);sphere(g,.07,Math.cos(a)*.31,.08,Math.sin(a)*.31,M.black,1,.45,1);}return g;}
+    function gemTable(x,z){rounded(propRoot,3.8,.16,1.9,x,1.03,z,M.oak,.06);for(const dx of [-1.62,1.62])for(const dz of [-.72,.72])plainBox(propRoot,.12,.9,.12,x+dx,.55,z+dz,M.darkwood);rounded(propRoot,3.45,.06,1.55,x,1.14,z,M.paper,.025);for(let i=0;i<15;i++){const dx=-1.35+(i%5)*.64,dz=-.48+Math.floor(i/5)*.46,c=['#76a8a2','#be657c','#8c84b1','#cc9857','#557e83'][i%5];const cut=new THREE.Mesh(new THREE.OctahedronGeometry(.17+(i%3)*.035,0),mat(c,.22,.14));cut.position.set(x+dx,1.33,z+dz);cut.rotation.y=i*.47;cut.castShadow=true;propRoot.add(cut);cyl(propRoot,.19,.19,.035,x+dx,1.18,z+dz,M.gold,16);}for(const dx of [-1.15,1.15]){rounded(propRoot,.48,.42,.35,x+dx,1.43,z-.72,M.wine,.045);sphere(propRoot,.18,x+dx,1.7,z-.72,M.goldlight,.72,1.5,.72);}}
+    function filmRig(x,z){cyl(propRoot,.55,.55,.08,x,.98,z,M.black,32);const ring=new THREE.Mesh(new THREE.TorusGeometry(.46,.055,12,40),mat('#f4dfb7',.35,.12));ring.position.set(x,2.0,z-.3);propRoot.add(ring);cyl(propRoot,.035,.035,1.7,x,1.55,z-.3,M.metal,12);for(const dx of [-.48,.48]){link(propRoot,[x,1.05,z],[x+dx,.05,z+.15],.03,M.metal);link(propRoot,[x,1.05,z],[x+dx*.5,.05,z-.35],.03,M.metal);}rounded(propRoot,.5,.34,.28,x+.72,1.05,z+.55,M.black,.05);rounded(propRoot,.38,.23,.05,x+.72,1.07,z+.39,M.screen,.02);cyl(propRoot,.12,.16,.22,x+.72,1.05,z+.35,M.metal,18);}
+    function displayWall(x,z){rounded(propRoot,1.75,2.25,.38,x,1.35,z,M.wood,.05);for(const y of [.72,1.36,2.0]){rounded(propRoot,1.5,.08,.52,x, y,z+.18,M.gold,.025);for(let i=0;i<3;i++){const xx=x-.5+i*.5;sphere(propRoot,.12,xx,y+.2,z+.15,M.goldlight,.45,1.25,.45);sphere(propRoot,.07,xx,y+.33,z+.15,M.wine2,.6,.8,.6);}}}
+    function workshop(x,z){rounded(propRoot,2.45,.16,.95,x,1.02,z,M.darkwood,.045);rounded(propRoot,2.32,.09,.83,x,1.15,z,M.tile,.035);for(const dx of [-1.08,1.08])for(const dz of [-.36,.36])plainBox(propRoot,.1,.84,.1,x+dx,.58,z+dz,M.metal);for(const dx of [-.62,.04,.65]){const motor=rounded(propRoot,.48,.35,.38,x+dx,1.4,z-.15,M.metal,.05);cyl(propRoot,.22,.22,.12,x+dx,1.48,z+.11,M.gold,24);const wheel=new THREE.Mesh(new THREE.TorusGeometry(.18,.04,8,24),M.metal);wheel.position.set(x+dx,1.48,z+.19);propRoot.add(wheel);}rounded(propRoot,1.6,.08,.38,x,1.25,z+.3,M.wood2,.025);chair(x,z+1.0);for(let i=0;i<3;i++)cyl(propRoot,.04,.04,.3,x-.6+i*.6,1.4,z-.55,M.gold,12);}
+    function packingTable(x,z){rounded(propRoot,2.3,.16,1.25,x,1.0,z,M.wood2,.05);for(const dx of [-1,1])for(const dz of [-.5,.5])plainBox(propRoot,.12,.85,.12,x+dx,.55,z+dz,M.darkwood);for(let i=0;i<3;i++){const bx=x-.65+i*.62;rounded(propRoot,.42,.36,.38,bx,1.27,z-.12,i===1?M.oak:M.wood,.03);plainBox(propRoot,.44,.025,.4,bx,1.47,z-.12,M.paper,false);}}
+    function clearGroup(group){while(group.children.length){const c=group.children.pop();if(c.geometry)c.geometry.dispose();if(c.material&&!Array.isArray(c.material))c.material.dispose();if(c.material&&Array.isArray(c.material))c.material.forEach(m=>m.dispose());}}
+    const N=(x,z,pose='walk',dwell=900)=>({x,z,pose,dwell});
+    const makeSeatRoute=(x,z,dwell=6800)=>[N(x,z+1,'sit',dwell),N(x+.85,z+1,'walk',100),N(x+.85,z+2.05,'work',1500),N(x+.85,z+1,'walk',100),N(x,z+1,'sit',dwell-500)];
+    const seat=(name,sex,x,z)=>({name,sex,route:makeSeatRoute(x,z)});
+    const standRoute=(x,z)=>[N(x,z,'work',6500),N(x,z+.75,'walk',1100),N(x+(x>6?-.7:.7),z+.75,'walk',850),N(x,z,'work',6200)];
+    const stand=(name,sex,x,z)=>({name,sex,route:standRoute(x,z)});
+    const rosters={taiwan:[seat('Regina','female',-2.8,-1.75),seat('怡安','female',0,-1.75),seat('若晴','female',2.8,-1.75)],shenzhen:[]};
+    const activePeople=[];
+    function limbGroup(parent,skin,shirt,pose,sex){
+      const arms=[];
+      for(const side of [-1,1]){const a=new THREE.Group();a.position.set(side*.31,1.48,0);parent.add(a);rounded(a,.18,.3,.21,side*.035,-.15,0,shirt,.025);rounded(a,.14,.24,.16,side*.07,-.41,.08,skin,.02);rounded(a,.15,.1,.16,side*.07,-.54,.12,skin,.018);arms.push(a);}
+      return arms;
+    }
+    function makeAvatar(p){
+      const root=new THREE.Group();root.rotation.y=Math.PI;actorRoot.add(root);
+      const skin=mat(p.sex==='male'?'#e8b99a':'#efc4a4'),hair=mat(p.hair||'#382920'),wardrobe=['#a8547b','#d16c78','#6282bd','#56a592','#bd8d55','#8063a6'],tone=wardrobe[(p.name.length*7+p.name.charCodeAt(0))%wardrobe.length],shirt=mat(p.sex==='male'?'#354b70':tone),pants=mat(p.sex==='male'?'#344050':'#55413e'),shoes=M.darkwood;
+      const standing=new THREE.Group(),sitting=new THREE.Group();root.add(standing,sitting);
+      // Deliberately block-shaped characters share the same proportions and contact points.
+      rounded(standing,.56,.65,.38,0,1.2,0,shirt,.045);rounded(standing,.16,.38,.025,0,1.27,.205,M.paper,.01);
+      rounded(standing,.43,.18,.31,0,.84,0,pants,.03);
+      for(const side of [-1,1]){const leg=new THREE.Group();leg.position.set(side*.14,.81,0);standing.add(leg);rounded(leg,.17,.55,.2,0,-.29,0,pants,.025);rounded(leg,.21,.11,.34,0,-.59,.1,shoes,.02);leg.userData.swingSide=side;}
+      const standArms=limbGroup(standing,skin,shirt,'stand',p.sex);
+      rounded(sitting,.47,.22,.4,0,.72,0,pants,.035);rounded(sitting,.55,.61,.37,0,1.2,-.02,shirt,.045);rounded(sitting,.16,.38,.025,0,1.27,.19,M.paper,.01);
+      for(const side of [-1,1]){rounded(sitting,.21,.17,.51,side*.14,.6,.2,pants,.03);rounded(sitting,.17,.4,.2,side*.14,.32,.47,pants,.025);rounded(sitting,.21,.1,.32,side*.14,.08,.56,shoes,.02);}
+      const sitArms=limbGroup(sitting,skin,shirt,'sit',p.sex);sitArms.forEach((a,i)=>{a.children.forEach(c=>{if(c.position)c.position.z+=.13;});});
+      rounded(root,.61,.59,.52,0,1.95,.01,skin,.065);rounded(root,.64,.2,.56,0,2.26,-.01,hair,.065);
+      for(const side of [-1,1]){rounded(root,.13,p.sex==='female'?.38:.16,.48,side*.29,p.sex==='female'?2.05:2.2,.005,hair,.035);rounded(root,.055,.065,.018,side*.13,1.95,.277,M.black,.012);}
+      rounded(root,.07,.035,.018,0,1.81,.277,mat('#a96968'),.01);
+      if(p.sex==='female')rounded(root,.22,.22,.24,.32,1.87,-.2,hair,.06);
+      const shadow=new THREE.Mesh(new THREE.CircleGeometry(.42,24),new THREE.MeshBasicMaterial({color:'#493c32',transparent:true,opacity:.14,depthWrite:false}));shadow.rotation.x=-Math.PI/2;shadow.position.y=.012;root.add(shadow);
+      const avatar={root,standing,sitting,standArms,sitArms,pose:'work',p};p.avatar=avatar;activePeople.push(p);setPose(p,'work');return avatar;
+    }
+    function setPose(p,pose){const a=p.avatar;if(!a)return;a.pose=pose;const seated=pose==='sit';a.standing.visible=!seated;a.sitting.visible=seated;a.p.pose=pose;if(pose!=='walk')a.root.rotation.y=Math.PI;}
+    function projected(pos){const v=pos.clone().project(camera),r=stage.getBoundingClientRect();return{x:(v.x+1)*.5*r.width,y:(1-v.y)*.5*r.height,z:v.z};}
+    function syncLabels(){for(const p of activePeople){if(!p.el||!p.avatar||!p.onShift)continue;const q=projected(new THREE.Vector3(p.x,(p.floorY||0)+.34,p.z));p.el.style.left=`${q.x}px`;p.el.style.top=`${q.y}px`;p.el.style.zIndex=String(Math.round(q.y));}}
+    function syncZones(){const els=[...document.querySelectorAll('.zone')];zoneAnchors.forEach((a,i)=>{const el=els[i];if(!el)return;el.textContent=a[0];el.style.display=officeLevel===2&&i<2?'block':'none';const q=projected(a[1]);el.style.left=`${q.x}px`;el.style.top=`${q.y}px`;});}
+    function resize(){const w=stage.clientWidth||1,h=stage.clientHeight||1,aspect=w/h;renderer.setSize(w,h,false);const size=officeLayout();const hh=Math.max((size.depth+3)*.58+size.floors*.4,(size.width+size.depth*.5)/aspect*.6)*.92;camera.left=-hh*aspect;camera.right=hh*aspect;camera.top=hh;camera.bottom=-hh;camera.updateProjectionMatrix();camera.position.set(14,8+size.floors*.7,20);camera.lookAt(0,size.floors===2?4.05:1,0);syncLabels();syncZones();}
+    function personButton(p){const el=document.createElement('button');el.className='person';el.style.display='none';el.type='button';el.setAttribute('aria-label',p.name);el.innerHTML=`<span class="person-name">${p.name}</span>`;el.addEventListener('click',()=>window.parent.postMessage({type:'tycoon-person',name:p.name,activity:p.activityLabel},location.origin));peopleLayer.append(el);p.el=el;}
+    function startPeople(name){peopleLayer.replaceChildren();for(const p of activePeople){p.avatar=null;p.el=null;}actorRoot.clear();activePeople.length=0;for(const p of rosters[name]){personButton(p);makeAvatar(p);const n=p.route[0];p.x=n.x;p.z=n.z;p.stepIndex=0;p.motion=null;p.nextAt=Infinity;p.onShift=false;p.shiftCycle=-1;p.shiftMode='off';p.attendancePath=null;p.avatar.root.position.set(p.x,.325,p.z);p.avatar.root.visible=false;setPose(p,n.pose);initRole(p,activePeople.length-1);}syncLabels();}
+    function beginAttendanceWalk(p,points,mode,message,now){const clean=points.map(v=>({x:v.x,z:v.z}));p.attendancePath={points:clean,index:0,start:now,x0:clean[0].x,z0:clean[0].z,mode};p.x=clean[0].x;p.z=clean[0].z;p.avatar.root.position.set(p.x,(p.floorY||0)+.325,p.z);p.avatar.root.visible=true;p.el.style.display='flex';p.shiftMode=mode;p.workBubble.textContent=message;setPose(p,'walk');}
+    function finishAttendanceWalk(p,now){const path=p.attendancePath,mode=path.mode,last=path.points.at(-1);p.x=last.x;p.z=last.z;p.avatar.root.position.set(p.x,(p.floorY||0)+.325,p.z);p.attendancePath=null;if(mode==='exit'){p.onShift=false;p.shiftMode='off';p.avatar.root.visible=false;p.el.style.display='none';p.workBubble.textContent='';return;}p.shiftMode='working';p.cycleAt=now;p.activityAt=now;p.nextAt=now+8800+p.roleIndex*2000;p.walkQueue=[];p.activityLabel='已打卡・開始工作';setPose(p,p.job==='reply'?'sit':'work');p.workBubble.textContent='已打卡・開始工作';}
+    function advanceAttendance(p,now){const path=p.attendancePath;if(!path)return;const target=path.points[path.index+1];if(!target){finishAttendanceWalk(p,now);return;}const dx=target.x-path.x0,dz=target.z-path.z0,duration=Math.max(460,Math.hypot(dx,dz)*372),t=Math.min(1,Math.max(0,(now-path.start)/duration)),e=t*t*(3-2*t);p.x=THREE.MathUtils.lerp(path.x0,target.x,e);p.z=THREE.MathUtils.lerp(path.z0,target.z,e);p.avatar.root.position.set(p.x,(p.floorY||0)+.325,p.z);p.avatar.root.rotation.y=Math.atan2(dx,dz);setPose(p,'walk');const swing=Math.sin(now*.0112+p.name.length)*.32;p.avatar.standing.children.forEach(o=>{if(o.userData.swingSide)o.rotation.z=swing*o.userData.swingSide;});if(t>=1){path.index++;path.start=now;path.x0=target.x;path.z0=target.z;if(path.index>=path.points.length-1)finishAttendanceWalk(p,now);}}
+    function updateAttendance(schedule,now){if(!schedule)return;workday=schedule;const {width,depth}=officeLayout(),front=depth/2,door={x:width/2+.55,z:front+1.05},inside={x:width/2-.45,z:front-.35};for(const p of activePeople){p.morale=Number(staffMoods[p.name]??p.morale??78);if(!schedule.active){p.onShift=false;p.shiftMode='off';p.attendancePath=null;p.avatar.root.visible=false;p.el.style.display='none';continue;}if(p.shiftCycle!==schedule.cycle){p.shiftCycle=schedule.cycle;p.onShift=true;p.shiftMode='enter';p.el.style.display='flex';p.avatar.root.visible=true;const row={x:inside.x,z:Math.max(-depth/2+.6,p.home.z)};beginAttendanceWalk(p,[door,inside,row,p.home],'enter','早安！10:00 打卡上班',now);}if(schedule.action==='clockout'&&p.shiftMode!=='exit'&&p.onShift){const exitPoint={x:inside.x,z:front-.35},frontWalk={x:p.home.x,z:front-.75};beginAttendanceWalk(p,[{x:p.x,z:p.z},frontWalk,exitPoint,door],'exit','19:00 下班打卡，明天見',now);}}}
+    function taskNode(x,z,label,dwell,pose='work',carry=''){return {x,z,label,dwell,pose,carry};}
+    function planActivity(p,now){
+      const {width,depth}=officeLayout(),front=depth/2,side=p.home.x<0?-width/2+.55:width/2-.55;
+      const laneZ=Math.min(front-1.1,p.home.z+.95),stationZ=front-1.2;
+      const route=(destination,label,carry)=>[
+        taskNode(p.x,laneZ,'走向走道',0,'walk',carry),
+        taskNode(side,laneZ,'前往'+label,0,'walk',carry),
+        taskNode(side,stationZ,'前往'+label,0,'walk',carry),
+        taskNode(destination.x,destination.z,label,3150,'work',carry),
+        taskNode(side,stationZ,'返回工位',0,'walk',''),
+        taskNode(side,laneZ,'返回工位',0,'walk',''),
+        taskNode(p.home.x,laneZ,'返回工位',0,'walk',''),
+        taskNode(p.home.x,p.home.z,p.job==='select'?'檢查彩色裸石':p.job==='pack'?'核對訂單・封箱':/剪輯/.test(p.role||'')?'剪輯商品影片':/HR|人資/.test(p.role||'')?'整理員工紀錄':'回覆客人與整理企劃',6850+p.roleIndex*715,p.job==='reply'?'sit':'work','')
+      ];
+      const cycle=p.activityCycle++,roll=Math.abs(Math.sin((cycle+1)*12.9898+(p.roleIndex+1)*78.233));
+      const homeLabel=p.job==='select'?'檢查彩色裸石':p.job==='pack'?'核對訂單・封箱':/剪輯/.test(p.role||'')?'剪輯商品影片':/HR|人資/.test(p.role||'')?'整理員工紀錄':'回覆客人與整理企劃';
+      if((p.morale<72&&roll>.76)||cycle>0&&cycle%6===5){
+        p.activityKind='break';p.walkQueue=route({x:-width/2+1.2,z:stationZ},'喝水・短暫休息','');
+      }else if(workBusy&&p.roleIndex<2&&roll>.55){
+        p.activityKind='pack';p.walkQueue=route({x:width/2-1.15,z:stationZ},'支援包貨','box');
+      }else if(roll<.28){
+        p.activityKind=p.job;p.walkQueue=[taskNode(p.home.x,p.home.z,homeLabel,9300+p.roleIndex*500,p.job==='reply'?'sit':'work','')];
+      }else if(p.job==='select'){
+        p.activityKind='select';p.walkQueue=route({x:-.8,z:stationZ},roll>.72?'與同事討論選品':'送交選品報告','gem');
+      }else if(p.job==='reply'){
+        p.activityKind='reply';const report=/剪輯/.test(p.role||'')?'送交剪輯預覽':/HR|人資/.test(p.role||'')?'送交人員紀錄':/行銷/.test(p.role||'')?'交接行銷企劃':roll>.72?'確認客人需求':'交接客人訂單';p.walkQueue=route({x:.8,z:stationZ},report,'');
+      }else{
+        p.activityKind='pack';p.walkQueue=route({x:width/2-1.15,z:stationZ},'送到出貨架','box');
+      }
+      p.nextAt=now;
+    }
+    function updatePeople(now){
+      for(const p of activePeople){
+        if(!p.onShift)continue;
+        if(p.attendancePath){advanceAttendance(p,now);continue;}
+        if(p.motion){
+          const m=p.motion,t=Math.min(1,(now-m.start)/m.duration),e=t*t*(3-2*t);
+          p.x=THREE.MathUtils.lerp(m.x0,m.node.x,e);p.z=THREE.MathUtils.lerp(m.z0,m.node.z,e);
+          p.avatar.root.position.set(p.x,p.floorY+.325,p.z);
+          p.avatar.root.rotation.y=Math.atan2(m.node.x-m.x0,m.node.z-m.z0);
+          if(t>=1){p.motion=null;p.activityLabel=m.node.label;p.carrying=m.node.carry;p.activityAt=now;p.nextAt=now+m.node.dwell;setPose(p,m.node.pose);}
+        }else if(now>=p.nextAt){
+          if(!p.walkQueue.length)planActivity(p,now);
+          const node=p.walkQueue.shift();
+          if(node){
+            const distance=Math.hypot(node.x-p.x,node.z-p.z);
+            if(distance<.04){p.activityLabel=node.label;p.carrying=node.carry;p.activityAt=now;p.nextAt=now+node.dwell;setPose(p,node.pose);}
+            else{p.motion={x0:p.x,z0:p.z,node,start:now,duration:Math.max(540,Math.min(4000,distance*930))};p.activityLabel=node.label;p.carrying=node.carry;setPose(p,'walk');}
+          }
+        }
+        if(p.avatar.pose==='walk'){
+          const swing=Math.sin(now*.0098+p.name.length)*.34;
+          p.avatar.standing.children.forEach(o=>{if(o.userData.swingSide)o.rotation.z=swing*o.userData.swingSide;});
+        }else p.avatar.standing.children.forEach(o=>{if(o.userData.swingSide)o.rotation.z=0;});
+        p.el.dataset.pose=p.avatar.pose;
+      }
+      syncLabels();
+    }
+    function showOffice(name){currentOffice=name;stage.classList.toggle('shenzhen',name==='shenzhen');document.querySelectorAll('.office-switch button').forEach(b=>b.classList.toggle('active',b.dataset.office===name));$('#officeTitle').textContent=name==='taiwan'?'台灣電商辦公室':'深圳辦公室・金工區';$('#officeSub').textContent=name==='taiwan'?'TAIWAN HQ · E-COMMERCE & CONTENT':'SHENZHEN OFFICE · JEWELRY WORKSHOP';$('#liveText').textContent=name==='taiwan'?'台灣辦公室・團隊工作中':'深圳辦公室・團隊工作中';makeRoomShell(name);updateEnvironment();startPeople(name);syncZones();}
+    let scenePaused=true,sceneTime=0,lastFrame=performance.now();
+    function render(t){const dt=Math.max(0,Math.min(50,t-lastFrame));lastFrame=t;if(!scenePaused)sceneTime+=dt;updateAttendance(workday,sceneTime);updatePeople(sceneTime);roleWork(sceneTime);renderer.render(scene,camera);stage.dataset.animationTime=Math.round(sceneTime);requestAnimationFrame(render);}
+    window.addEventListener('message',e=>{if(e.origin!==location.origin||e.source!==parent||e.data?.type!=='tycoon-scene')return;
+      workBusy=!!e.data.busy;workOrders=e.data.orders||0;stage.dataset.busy=workBusy;scenePaused=!!e.data.paused;stage.dataset.paused=scenePaused;workday=e.data.workday||workday;staffMoods=e.data.moods||staffMoods;updateEnvironment();
+      const people=e.data.people||['Regina','怡安','若晴'],names=people.map(p=>typeof p==='string'?p:p.name),level=Math.max(0,Math.min(2,e.data.level||0));
+      if(level!==officeLevel||names.join('|')!==rosters.taiwan.map(p=>p.name).join('|')){officeLevel=level;rosters.taiwan=people.map((person,i)=>{const q=workstation(i),name=typeof person==='string'?person:person.name,role=typeof person==='string'?'':person.role,sex=person?.sex||(/剪輯/.test(role)?'male':'female'),actor=seat(name,sex,q.x,q.z);actor.role=role;return actor;});makeRoomShell('taiwan');updateEnvironment();startPeople('taiwan');}updateAttendance(workday,sceneTime);
+    });
+    window.parent.postMessage({type:'tycoon-ready'},location.origin);
+    new ResizeObserver(resize).observe(stage);window.addEventListener('resize',resize);resize();showOffice('taiwan');requestAnimationFrame(render);
+    document.querySelectorAll('.office-switch button').forEach(b=>b.addEventListener('click',()=>showOffice(b.dataset.office)));
+    document.querySelectorAll('.choice').forEach(choice=>choice.addEventListener('click',()=>{const group=choice.closest('.decision');group.querySelectorAll('.choice').forEach(c=>c.setAttribute('aria-pressed','false'));choice.setAttribute('aria-pressed','true')}));
+    const toast=message=>{const el=$('#toast');el.textContent=message;el.classList.add('show');clearTimeout(toast.timer);toast.timer=setTimeout(()=>el.classList.remove('show'),2200)};
+    document.querySelectorAll('.nav button').forEach(button=>button.addEventListener('click',()=>{document.querySelectorAll('.nav button').forEach(b=>b.classList.toggle('active',b===button));if(button.dataset.tab!=='公司')toast(`${button.dataset.tab}｜此為主畫面概念，已保留對應的遊戲系統入口`)}));
+    $('#launch').addEventListener('click',()=>$('#modal').classList.add('open'));$('#modalClose').addEventListener('click',()=>$('#modal').classList.remove('open'));$('#modal').addEventListener('click',e=>{if(e.target.id==='modal')$('#modal').classList.remove('open')});document.addEventListener('keydown',e=>{if(e.key==='Escape')$('#modal').classList.remove('open')});
+  </script>
+</body>
+</html>

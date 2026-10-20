@@ -1,0 +1,8 @@
+{
+  // 純靜態資產 Worker：public/ 整包上線，沒有後端程式。
+  "name": "tzgro-game",
+  "compatibility_date": "2026-10-20",
+  "assets": {
+    "directory": "./public"
+  }
+}

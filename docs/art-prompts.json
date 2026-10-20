@@ -1,0 +1,46 @@
+{
+  "tool": "Built-in image_gen",
+  "style": "Premium editorial jewelry business game illustration, cream, emerald and champagne gold palette; fictional adult characters; consistent soft cinematic lighting.",
+  "assets": [
+    {
+      "file": "public/assets/tzgro-cards/regina.webp",
+      "prompt": "Portrait of Regina, fictional Taiwanese female jewelry entrepreneur age 40, shoulder length wavy dark brown hair, ivory tailored blouse, emerald pendant, confident thoughtful gentle expression, holding a loupe and colored gemstone, jewelry atelier blurred behind."
+    },
+    {
+      "file": "public/assets/tzgro-cards/marketing.webp",
+      "prompt": "Portrait of fictional Taiwanese female customer service and social marketing founder age 30, neat dark bob hair, teal blouse, small gold earrings, friendly alert expression, holding customer notebook, softly blurred small jewelry office."
+    },
+    {
+      "file": "public/assets/tzgro-cards/assistant.webp",
+      "prompt": "Portrait of fictional Taiwanese female executive assistant age 32, dark ponytail, terracotta knit top and cream apron, attentive determined expression, holding beautifully packed jewelry box, packing studio behind."
+    },
+    {
+      "file": "public/assets/tzgro-cards/hr.webp",
+      "prompt": "Portrait of fictional Taiwanese female HR professional age 38, glasses, straight shoulder length dark hair, navy blazer, composed ambiguous expression, holding recruitment dossier, office behind."
+    },
+    {
+      "file": "public/assets/tzgro-cards/gems.webp",
+      "prompt": "Macro still life of brilliant loose colored gemstones on a velvet emerald tray, ruby, sapphire, amethyst, tourmaline, gold tweezers and jeweler loupe, warm atelier light."
+    },
+    {
+      "file": "public/assets/tzgro-cards/campaign.webp",
+      "prompt": "Elegant jewelry content marketing workspace, cream camera on tripod, gemstone pendant on sculptural display, phone with abstract blue social post UI and no readable letters, notebook and gold pen."
+    },
+    {
+      "file": "public/assets/tzgro-cards/training.webp",
+      "prompt": "Beautiful miniature training scene: female jewelry staff studying gemstone specimens with instructor, open notebook, magnifying loupe, warm quiet office, thoughtful learning atmosphere."
+    },
+    {
+      "file": "public/assets/tzgro-cards/offer.webp",
+      "prompt": "Elegant supplier negotiation scene, female jewelry entrepreneur comparing trays of colored stones with a female supplier across a walnut desk, sealed quotation envelope and magnifying glass, subtle uncertainty."
+    },
+    {
+      "file": "public/assets/tzgro-cards/crisis.webp",
+      "prompt": "Jewelry quality inspection closeup, female hands comparing a damaged clasp and gemstone with a reference jewelry piece, shipping parcel and documents on desk, serious but calm atmosphere."
+    },
+    {
+      "file": "public/assets/tzgro-cards/merger.webp",
+      "prompt": "Elegant corporate jewelry acquisition scene, two professional women discussing an agreement across a dark green desk, refined model jewelry storefront and financial documents, city skyline at dusk."
+    }
+  ]
+}
