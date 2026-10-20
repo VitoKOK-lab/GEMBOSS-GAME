@@ -1,3 +1,5 @@
+// 舊版七章遊戲（2026-10-20 下架）的規則引擎，只留作參考，不會被執行。
+// 新版要擴充事件時，可從這裡取用：histories／newsEvents（真實新聞、來源網址、選項與效果）、makeEvent（五種事件的文案與事實）。
 const Game = (() => {
 'use strict';
 const histories=[

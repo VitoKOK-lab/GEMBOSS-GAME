@@ -1,5 +1,5 @@
 // v3 原型的模擬玩家：用來驗證「有策略會起飛、亂衝會出事、不作為會被追上」。
-const V3 = require('../public/prototype/v3/engine.js');
+const V3 = require('../public/engine.js');
 
 const PRIORITY = ['select', 'process', 'contract', 'quality', 'live', 'ecom', 'premium', 'agency', 'warehouse', 'video', 'overseas', 'hr', 'crossborder', 'finance', 'listing', 'course', 'crystal', 'merger'];
 
