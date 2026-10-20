@@ -31,10 +31,10 @@ header .brand{font-weight:800;letter-spacing:.06em}
 .barrow{display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px}
 .danger{color:var(--ruby)}
 #map{position:relative;height:300px;border-radius:14px;background:linear-gradient(160deg,#f6f2ea,#eef3f1);overflow:hidden}
-.region{position:absolute;transform:translate(-50%,-50%);text-align:center;font-size:12px}
+.region{position:absolute;z-index:1;transform:translate(-50%,-50%);text-align:center;font-size:12px}
 .region .dot{border-radius:50%;margin:0 auto 4px;display:grid;place-items:center;font-size:11px;color:#fff;box-shadow:0 6px 18px #0001}
 .region.locked .dot{filter:grayscale(1);opacity:.45}
-.bubble{position:absolute;width:42px;height:42px;border-radius:50%;border:0;padding:0;background:radial-gradient(circle at 35% 30%,#fff,var(--citrine));color:#5a3e00;font-weight:800;box-shadow:0 6px 16px #c9962b55;animation:pop .35s ease-out,float 3s ease-in-out infinite}
+.bubble{position:absolute;z-index:2;width:42px;height:42px;border-radius:50%;border:0;padding:0;background:radial-gradient(circle at 35% 30%,#fff,var(--citrine));color:#5a3e00;font-weight:800;box-shadow:0 6px 16px #c9962b55;animation:pop .35s ease-out,float 3s ease-in-out infinite}
 @keyframes pop{from{transform:scale(0)}to{transform:scale(1)}}
 @keyframes float{50%{margin-top:-6px}}
 .tree{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
@@ -73,6 +73,19 @@ canvas{width:100%;height:120px}
 .leads{display:grid;gap:8px}
 .leads label{display:flex;justify-content:space-between;gap:10px;align-items:center}
 .leads select{font:inherit;padding:5px;border-radius:8px;border:1px solid var(--line)}
+#spot{position:fixed;z-index:20;border-radius:14px;box-shadow:0 0 0 9999px #1d2b2899,0 0 0 3px var(--citrine) inset;pointer-events:none;transition:all .25s}
+#spot[hidden],#coach[hidden]{display:none}
+#coach{position:fixed;z-index:21;width:min(360px,calc(100vw - 32px));background:var(--card);border-radius:16px;padding:16px;box-shadow:0 14px 40px #0003}
+#coach h3{margin:0 0 6px;font-size:16px}
+#coach p{margin:0 0 12px;font-size:14px}
+#coach .row{display:flex;justify-content:space-between;align-items:center;gap:8px}
+#coach .skip{border:0;background:none;color:var(--muted);font-size:12px;padding:4px}
+#coach .wait{color:var(--emerald);font-weight:700;font-size:13px}
+.tip{background:#fbf3df;border-radius:12px;padding:10px 12px;font-size:13.5px;margin:8px 0}
+.tip b{color:#6b4b00}
+.help h3{margin:14px 0 4px;font-size:14px}
+.help p,.help li{font-size:14px;margin:2px 0}
+@media(max-width:600px){#coach{left:16px!important;right:16px;top:auto!important;bottom:16px}}
 @media(max-width:860px){.grid{grid-template-columns:1fr}.tree{grid-template-columns:1fr}header{gap:8px 14px}.speed{margin-left:0}}
 </style>
 </head>
@@ -84,6 +97,7 @@ canvas{width:100%;height:120px}
   <div class="stat"><small>本月營收</small><b class="num" id="rev">—</b></div>
   <div class="stat"><small>口碑點</small><b class="num" id="pts">—</b></div>
   <div class="stat"><small>口碑／士氣</small><b class="num" id="bm">—</b></div>
+  <button id="helpBtn">玩法</button>
   <div class="speed" id="speed"><button data-x="0">暫停</button><button data-x="1" class="on">1x</button><button data-x="2">2x</button><button data-x="4">4x</button></div>
 </header>
 <div class="wrap">
@@ -116,6 +130,8 @@ canvas{width:100%;height:120px}
 </div>
 <div class="overlay" id="overlay"><div class="dialog" id="dialog"></div></div>
 <div class="toast" id="toast" hidden></div>
+<div id="spot" hidden></div>
+<div id="coach" hidden></div>
 <script src="engine.js"></script>
 <script>
 'use strict';
@@ -131,10 +147,13 @@ function startScreen() {
     <p>讓客人像口碑一樣擴散：觸及 → 詢問 → 成交 → 熟客，熟客再帶來新客。對手同時在搶市場，現金燒完或對手拿下六成市場就結束。一局約 30–45 分鐘。</p>
     <h3>開局</h3><div class="starts">${starts}</div>
     <h3>難度</h3><div class="starts" style="grid-template-columns:repeat(3,1fr)">${diffs}</div>
-    <div class="choices"><button class="primary" id="go">開始經營</button></div>`);
+    <label style="display:block;margin-top:12px"><input type="checkbox" id="tutOn" ${tutorialDone() ? '' : 'checked'}> 新手教學（建議第一次玩）</label>
+    <div class="choices"><button class="primary" id="go">開始經營</button><button id="startHelp">先看玩法</button></div>`);
+  $('startHelp').onclick = helpCard;
   $('go').onclick = () => {
+    tut = { on: $('tutOn').checked, seen: {} };
     S = V3.create({ start: document.querySelector('[name=start]:checked').value, difficulty: document.querySelector('[name=diff]:checked').value, seed: Date.now() >>> 0 });
-    closeDialog(); render();
+    closeDialog(); render(); showDecision();
   };
 }
 function dialog(html) { $('dialog').innerHTML = html; $('overlay').hidden = false; }
@@ -149,12 +168,16 @@ function showDecision() {
     dialog(`<h2>${V3.view(S).year} 年開始</h2>
       ${g ? `<p>${g.year} 年營收 <b class="num">${money(g.revenue)}</b>／目標 ${money(g.goal)}　${g.hit ? '✓ 達成' : '未達成'}</p>` : '<p>指派三位負責人。一人兼兩職會分心，從缺的部門效率最低。</p>'}
       <p>今年目標：<b class="num">${money(V3.ERA_GOALS[Math.floor(S.t / 12)])}</b>　年度結算 +2 口碑點</p>
+      ${tipOnce(S.t === 0 ? 'leads' : 'year', S.t === 0
+        ? '<b>教學</b>　三位負責人分別管商品、通路、組織。括號裡的數字是能力，越高效果越好；同一人兼兩職會分心，從缺最差。先照預設就可以。'
+        : S.t === 12 ? '<b>教學</b>　每年初看去年有沒有達標、指派今年的負責人，並拿到 +2 口碑點。達標不是過關條件，是檢查點：落後時想想瓶頸在觸及、轉換還是產能。' : '')}
       <div class="leads">${['product', 'channel', 'org'].map(id => `<label>${V3.BRANCH[id]}負責人<select data-slot="${id}">${opts(id)}</select></label>`).join('')}</div>
       <div class="choices"><button class="primary" id="eraOk">開始這一年</button></div>`);
-    $('eraOk').onclick = () => { document.querySelectorAll('[data-slot]').forEach(x => x.value ? V3.assign(S, x.dataset.slot, x.value) : (S.leads[x.dataset.slot] = null)); V3.confirmEra(S); closeDialog(); render(); showDecision(); };
+    $('eraOk').onclick = () => { document.querySelectorAll('[data-slot]').forEach(x => x.value ? V3.assign(S, x.dataset.slot, x.value) : (S.leads[x.dataset.slot] = null)); const wasYearTwo = S.t === 12; V3.confirmEra(S); closeDialog(); if (wasYearTwo && tut.on) finishTutorial(); render(); showDecision(); };
     return;
   }
   dialog(`<h2>${esc(e.title)}</h2><p>${esc(e.text)}</p>
+    ${tipOnce('event', '<b>教學</b>　事件會暫停時間等你決定。同一種事件沒有標準答案：先看現在的產能、現金跑道、口碑；有「查證」就先查證。結果會在右下角揭曉。')}
     ${e.verify && !e.verified ? '<div class="choices"><button id="verify">先查證（1 口碑點）</button></div>' : ''}
     <div class="choices">${e.choices.map(([id, label]) => `<button data-c="${id}">${esc(label)}</button>`).join('')}</div>`);
   if ($('verify')) $('verify').onclick = () => { const err = V3.verify(S); if (err) toast(err); showDecision(); render(); };
@@ -162,6 +185,7 @@ function showDecision() {
     const err = V3.choose(S, b.dataset.c); if (err) return toast(err);
     closeDialog();
     const r = S.reveals.shift(); if (r) toast(`<div>${esc(r.result)}</div><div style="margin-top:6px"><b>原則</b>　${esc(r.principle)}</div>`);
+    if (r && tut.on && !tut.seen.reveal) { tut.seen.reveal = true; clearTimeout(toastTimer); showCoach({ target: '#toast', title: '結果揭曉', text: '右下角是這次決策的結果。「原則」是背後的經營道理，一局結束時的診斷報告也會用到。', onClose: () => $('toast').hidden = true }); }
     render(); afterStep();
   });
 }
@@ -183,7 +207,9 @@ function spawnBubbles(n) {
     const b = document.createElement('button'); b.className = 'bubble'; b.textContent = '+1';
     b.style.left = 8 + Math.random() * 80 + '%'; b.style.top = 10 + Math.random() * 70 + '%';
     b.onclick = () => { V3.collect(S, 1); b.remove(); render(); };
-    map.appendChild(b); setTimeout(() => b.remove(), 8000 / Math.max(1, speed));
+    map.appendChild(b);
+    const expire = () => coach ? setTimeout(expire, 500) : b.remove();
+    setTimeout(expire, 8000 / Math.max(1, speed));
   }
 }
 
@@ -222,6 +248,7 @@ function render() {
   document.querySelectorAll('[data-node]').forEach(b => b.onclick = () => { const err = V3.buy(S, b.dataset.node); if (err) toast(err); render(); });
   $('log').innerHTML = S.log.slice(0, 40).map(l => `<div><span class="num">${l.date}</span>　${esc(l.text)}</div>`).join('');
   chart();
+  checkCoach();
 }
 function chart() {
   const c = $('chart'), x = c.getContext('2d'), w = c.width, h = c.height, data = S.history.map(d => d.revenue);
@@ -235,10 +262,11 @@ function chart() {
 
 function loop(now) {
   const dt = now - last; last = now;
-  if (S && S.phase === 'running' && speed) {
+  if (S && S.phase === 'running' && speed && !coach && $('overlay').hidden) {
     acc += dt * speed;
     if (acc >= V3.MONTH_MS) { acc = 0; V3.step(S); spawnBubbles(S.bubbles); render(); afterStep(); }
   }
+  if (coach) placeCoach();
   requestAnimationFrame(loop);
 }
 $('speed').onclick = e => { const b = e.target.closest('button'); if (!b) return; speed = +b.dataset.x; document.querySelectorAll('#speed button').forEach(x => x.classList.toggle('on', x === b)); };
@@ -246,8 +274,74 @@ $('ads').oninput = e => { if (S) { V3.setAds(S, +e.target.value); render(); } };
 $('hire').onclick = () => { const err = V3.hire(S); if (err) toast(err); render(); };
 $('fire').onclick = () => { const err = V3.fire(S); if (err) toast(err); render(); };
 $('expand').onclick = () => { const err = V3.expand(S); if (err) toast(err); render(); };
+// ── 新手教學：事情第一次發生時暫停、聚光、說一句、等玩家做一次 ──
+let tut = { on: false, seen: {} }, coach = null;
+const TUT_KEY = 'tzgro-v3-tutorial-done';
+function tutorialDone() { try { return localStorage.getItem(TUT_KEY) === '1'; } catch { return false; } }
+function tipOnce(id, html) { if (!tut.on || !html || tut.seen[id]) return ''; tut.seen[id] = true; return `<div class="tip">${html}</div>`; }
+const capHigh = () => { const h = S.history.at(-1); return h && h.orders > h.capacity * .8; };
+const STEPS = [
+  { id: 'goal', when: () => true, title: '你的目標', text: '從 2019 年經營到 2025 年底，越做越大，最好能上市。兩種情況會提早結束：對手拿下六成市場，或現金燒完。' },
+  { id: 'map', when: () => true, target: '#map', title: '市場版圖', text: '每個圓是一個市場。綠色是你的客人、紅色是對手、灰色是還沒被拿下的客人。灰色地區要靠能力樹開拓，晚開拓就會先被對手搶走。' },
+  { id: 'bars', when: () => true, target: '.bars', title: '四條要盯的指標', text: '市占：你和對手的拉鋸。現金跑道：還能撐幾個月。今年營收／目標：年度檢查點。訂單／產能：變紅代表出貨跟不上，口碑和士氣會掉。' },
+  { id: 'speed', when: () => true, target: '#speed', title: '時間會自己走', text: '一個月約 20 秒，可以暫停或加速。有事件時會自動暫停等你決定。', btn: '開始第一個月' },
+  { id: 'bubble', when: () => document.querySelector('.bubble'), target: '.bubble', title: '收成口碑點', text: '客人成交、熟客回購時會冒出金色泡泡，點它就得到口碑點。泡泡會消失，別放著。', wait: () => S.points > coach.points },
+  { id: 'tree', when: () => V3.available(S, 'select') && S.points >= V3.byId.select.pts && S.cash >= V3.byId.select.cash, target: '[data-node=select]', title: '用口碑點解鎖能力', text: '買「精選主打」，提高成交率。口碑點有限，整棵樹買不完，順序要自己想。', wait: () => V3.has(S, 'select') },
+  { id: 'expand', when: () => capHigh() && S.staff.length >= V3.view(S).seats && V3.view(S).expandFee && V3.view(S).year >= V3.view(S).expandYear && S.cash >= V3.view(S).expandFee, target: '#expand', title: '訂單快接不住了', text: '訂單已超過產能八成，但座位滿了。先擴張辦公室，才有位子招人。', wait: () => S.office > coach.office },
+  { id: 'hire', when: () => capHigh() && S.staff.length < V3.view(S).seats, target: '#hire', title: '招人擴充產能', text: '多一個人就多一份出貨產能，但每月多一份薪水。新人第一個月只有半個人的產能。', wait: () => S.staff.length > coach.staff },
+  { id: 'ads', when: () => S.t >= 4, target: '#ads', title: '廣告預算', text: '拉滑桿就是每月花錢買詢問。市場越飽和越貴；產能接不住或現金跑道少於 4 個月時，先別加。' },
+];
+function checkCoach() {
+  if (!tut.on || coach || !S || S.phase === 'end' || !$('overlay').hidden) return;
+  const intro = ['goal', 'map', 'bars', 'speed'];
+  const step = STEPS.find(x => !tut.seen[x.id] && (intro.includes(x.id) || intro.every(i => tut.seen[i])) && x.when());
+  if (step) showCoach(step);
+}
+function showCoach(step) {
+  if (step.id) tut.seen[step.id] = true;
+  coach = { ...step, points: S.points, office: S.office, staff: S.staff.length };
+  const el = step.target && document.querySelector(step.target);
+  if (el) el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+  $('coach').innerHTML = `<h3>${step.title}</h3><p>${step.text}</p><div class="row"><button class="skip" id="coachSkip">跳過教學</button>${step.wait ? '<span class="wait">請點亮起來的地方</span>' : `<button class="primary" id="coachOk">${step.btn || '知道了'}</button>`}</div>`;
+  $('coach').hidden = false;
+  if ($('coachOk')) $('coachOk').onclick = closeCoach;
+  $('coachSkip').onclick = () => { closeCoach(); finishTutorial(true); };
+  placeCoach();
+}
+function placeCoach() {
+  if (coach.wait && coach.wait()) return closeCoach();
+  const el = coach.target && document.querySelector(coach.target), spot = $('spot'), card = $('coach');
+  if (coach.target && !el) return closeCoach();
+  if (!el) { spot.hidden = true; card.style.left = (innerWidth - card.offsetWidth) / 2 + 'px'; card.style.top = Math.max(16, (innerHeight - card.offsetHeight) / 2) + 'px'; return; }
+  const r = el.getBoundingClientRect(), pad = 6;
+  spot.hidden = false; Object.assign(spot.style, { left: r.left - pad + 'px', top: r.top - pad + 'px', width: r.width + pad * 2 + 'px', height: r.height + pad * 2 + 'px' });
+  const below = r.bottom + 14 + card.offsetHeight < innerHeight;
+  card.style.left = Math.min(Math.max(16, r.left), innerWidth - card.offsetWidth - 16) + 'px';
+  card.style.top = (below ? r.bottom + 14 : Math.max(16, r.top - card.offsetHeight - 14)) + 'px';
+}
+function closeCoach() {
+  const c = coach; coach = null; $('coach').hidden = true; $('spot').hidden = true;
+  if (c?.onClose) c.onClose();
+  if (S) render();
+}
+function finishTutorial(skipped) {
+  try { localStorage.setItem(TUT_KEY, '1'); } catch {}
+  if (skipped) { tut.on = false; return; }
+  // 還沒遇到的情況（例如產能第一次吃緊），之後第一次發生時仍會提示
+  showCoach({ title: '教學完成', text: '基本操作都會了。接下來自己經營到 2025 年底；還沒遇到的狀況，第一次發生時會再提示。忘記規則時，按右上角「玩法」可以重看。' });
+}
+function helpCard() {
+  dialog(`<div class="help"><h2>玩法</h2>
+    <h3>目標</h3><p>從 2019 年經營到 2025 年底。成功上市需要：完成「上市申請」、最後一年營收 2.5 億以上、有獲利、士氣 45 以上。</p>
+    <h3>兩種提早結束</h3><p>對手拿下六成市場（品類被定義），或現金低於零（破產）。</p>
+    <h3>每個月發生什麼</h3><p>客人依序走過：觸及 → 詢問 → 成交 → 熟客；熟客的口碑再帶來新的觸及。對手同時在搶還沒被拿下的客人。訂單超過出貨產能時，口碑和士氣會下滑。</p>
+    <h3>你能做的事</h3><ul><li>點金色泡泡收成口碑點，用點數＋現金解鎖能力樹</li><li>調整每月廣告預算</li><li>招募、資遣、擴張辦公室（座位依年份開放）</li><li>每年初指派商品、通路、組織三位負責人</li><li>處理事件與真實新聞：沒有標準答案，看當下的產能、現金、口碑；能查證就先查證</li></ul>
+    <h3>結局診斷</h3><p>一局結束會列出七項指標，例如現金跑道最低點、獲客成本對客人價值、產能超載月數，每項附一句經營原則。</p>
+    <div class="choices"><button class="primary" id="helpClose">回到遊戲</button></div></div>`);
+  $('helpClose').onclick = () => { closeDialog(); if (!S) startScreen(); else if (S.phase === 'decide') showDecision(); else if (S.phase === 'end') endScreen(); };
+}
+$('helpBtn').onclick = helpCard;
 startScreen();
-const firstEra = setInterval(() => { if (S && $('overlay').hidden) { clearInterval(firstEra); showDecision(); } }, 200);
 requestAnimationFrame(loop);
 </script>
 </body>
