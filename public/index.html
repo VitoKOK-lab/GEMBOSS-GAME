@@ -30,7 +30,7 @@ header .brand{font-weight:800;letter-spacing:.06em}
 .speed button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
 #playBtn{font-size:16px;font-weight:700;padding:9px 18px}
 .grid{display:grid;grid-template-columns:1.25fr 1fr;gap:16px;margin-top:16px}
-.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px}
+.card{scroll-margin-top:130px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px}
 .card h2{margin:0 0 10px;font-size:15px}
 .card h2 small{color:var(--muted);font-weight:400}
 .bars{display:grid;gap:12px;margin-top:14px}
@@ -101,6 +101,20 @@ details summary{cursor:pointer;font-weight:700;font-size:14px}
 .help h3{margin:14px 0 4px;font-size:14px}
 .help p,.help li{font-size:14px;margin:2px 0}
 @media(max-width:860px){.grid{grid-template-columns:1fr}.tree{grid-template-columns:1fr}header{gap:8px 14px}.speed{margin-left:0}}
+#veil{position:absolute;inset:0;z-index:3;display:grid;place-items:center;align-content:center;gap:10px;background:#fbfbfcd9;border-radius:14px}
+#veil[hidden]{display:none}
+#veil b{font-size:18px}
+#veil button{font-size:18px;padding:12px 26px}
+#tabs{display:none}
+@media(max-width:600px){
+ header{padding:8px 12px;gap:2px 12px}header .brand{display:none}
+ .stat{padding:0 2px}.stat small{font-size:10px}.stat b{font-size:14px}
+ #helpBtn,.speed button{padding:4px 10px;font-size:13px}#playBtn{font-size:15px;padding:7px 14px}
+ body{padding-bottom:72px}
+ #tabs{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:8;background:var(--card);border-top:1px solid var(--line);padding:8px 12px calc(8px + env(safe-area-inset-bottom));gap:8px}
+ #tabs button{flex:1;font-size:15px;font-weight:700;padding:10px}
+ .toast{bottom:84px;left:16px;right:16px;max-width:none}
+}
 </style>
 </head>
 <body>
@@ -119,9 +133,9 @@ details summary{cursor:pointer;font-weight:700;font-size:14px}
 </header>
 <div class="wrap">
   <div class="grid">
-    <section class="card">
+    <section class="card" id="marketCard">
       <h2>市場 <small>綠色＝你的客人</small></h2>
-      <div id="map"></div>
+      <div id="map"><div id="veil" hidden><b>⏸ 已暫停，時間停住了</b><button class="primary" id="resumeBtn">▶ 繼續</button></div></div>
       <div class="bars">
         <div data-u="rival" id="rivalBar"><div class="barrow"><span>你的客人 vs 對手的客人</span><span class="num" id="shareText"></span></div><div class="bar"><i id="mine" style="background:var(--emerald)"></i><i style="flex:1"></i><i id="comp" style="background:var(--ruby)"></i></div><div class="hint">紅色到 60% 就輸了</div></div>
         <div data-u="capacity" id="capBar"><div class="barrow"><span>這個月的訂單 / 你們做得完的量</span><span class="num" id="capText"></span></div><div class="bar"><i id="cap" style="background:var(--amethyst)"></i></div><div class="hint">變紅＝做不完，口碑和士氣會掉</div></div>
@@ -142,6 +156,7 @@ details summary{cursor:pointer;font-weight:700;font-size:14px}
     <div class="tree" id="tree"></div>
   </section>
 </div>
+<nav id="tabs" aria-label="跳到區塊"><button data-go="marketCard">市場</button><button data-go="ops" data-u="ops">經營</button><button data-go="treeCard" data-u="tree">能力</button></nav>
 <div class="overlay" id="overlay"><div class="dialog" id="dialog"></div></div>
 <div class="toast" id="toast" hidden></div>
 <div id="spot" hidden></div>
@@ -154,7 +169,7 @@ const $ = id => document.getElementById(id), esc = t => String(t).replace(/[&<>"
 const POS = { north: [60, 28], south: [52, 64], hk: [24, 46], sg: [18, 78], jp: [84, 32] };
 const ALL = ['points', 'started', 'fast', 'rival', 'capacity', 'ads', 'goal', 'tree', 'treeOpen', 'leads', 'records', 'ops'];
 const MODE_KEY = 'tzgro-mode';
-let S = null, speed = 1, acc = 0, last = performance.now(), toastTimer = 0;
+let S = null, speed = 1, lastSpeed = 1, acc = 0, last = performance.now(), toastTimer = 0;
 let mode = 'new', open = new Set(ALL), coach = null, seen = {}, flags = {};
 const money = n => (n < 0 ? '-' : '') + 'NT$' + Math.round(Math.abs(n) / 10000).toLocaleString('zh-TW') + '萬';
 const storeGet = k => { try { return localStorage.getItem(k); } catch { return null; } };
@@ -190,7 +205,7 @@ function startScreen() {
   $('go').onclick = () => {
     mode = document.querySelector('[name=mode]:checked').value; storeSet(MODE_KEY, mode);
     S = V3.create({ start: document.querySelector('[name=start]:checked').value, difficulty: document.querySelector('[name=diff]:checked').value, seed: Date.now() >>> 0 });
-    seen = {}; flags = {}; coach = null; speed = 1; acc = 0;
+    seen = {}; flags = {}; coach = null; speed = 1; lastSpeed = 1; acc = 0;
     open = mode === 'pro' ? new Set(ALL) : new Set();
     closeDialog();
     if (mode === 'new') V3.confirmEra(S); // 第一年負責人照預設，不先問
@@ -307,6 +322,7 @@ function render() {
   document.querySelectorAll('[data-node]').forEach(b => b.onclick = () => { const err = V3.buy(S, b.dataset.node); if (err) toast(err); render(); });
   $('log').innerHTML = S.log.slice(0, 40).map(l => `<div><span class="num">${l.date}</span>　${esc(l.text)}</div>`).join('');
   chart();
+  syncSpeed();
   checkCoach();
 }
 function chart() {
@@ -336,7 +352,7 @@ const STEPS = [
   { id: 'records', after: 'goal', when: () => S.t >= 18, reveal: ['records'], target: '#recordsBox', title: '回頭看紀錄', text: '這裡可以看營收圖和每個月發生的事。教學到這裡結束，按「玩法」可以隨時看規則。', then: () => storeSet(MODE_KEY, 'pro') },
 ];
 function checkCoach() {
-  if (mode !== 'new' || coach || !S || S.phase === 'end' || !$('overlay').hidden) return;
+  if (mode !== 'new' || coach || !S || S.phase === 'end' || S.phase === 'decide' || !$('overlay').hidden) return;
   const step = STEPS.find(x => !seen[x.id] && (!x.after || seen[x.after]) && (!x.when || x.when()) && (x.todo || x.auto || flags.lastInfo !== S.t || x.id === 'reveal' || x.id === 'points'));
   if (step) showCoach(step);
 }
@@ -376,7 +392,7 @@ function placeCoach() {
   // 提示卡不能蓋住目標：窄螢幕放在目標的另一半畫面，寬螢幕放在目標下方或上方
   if (innerWidth < 600) {
     card.style.left = '16px';
-    card.style.top = (r.top + r.height / 2 > innerHeight / 2 ? 12 : innerHeight - card.offsetHeight - 16) + 'px';
+    card.style.top = (r.top + r.height / 2 > innerHeight / 2 ? 12 : innerHeight - card.offsetHeight - 80) + 'px';
     return;
   }
   const below = r.bottom + gap + card.offsetHeight < innerHeight;
@@ -412,7 +428,16 @@ function loop(now) {
   requestAnimationFrame(loop);
 }
 $('playBtn').onclick = () => { unlock('started'); closeCoach(); };
-$('speed').onclick = e => { const b = e.target.closest('button[data-x]'); if (!b) return; speed = +b.dataset.x; document.querySelectorAll('#speed button[data-x]').forEach(x => x.classList.toggle('on', x === b)); };
+function setSpeed(x) { speed = x; if (x) lastSpeed = x; syncSpeed(); }
+function syncSpeed() {
+  document.querySelectorAll('#speed button[data-x]').forEach(b => b.classList.toggle('on', +b.dataset.x === speed));
+  const pause = document.querySelector('#speed button[data-x="0"]');
+  pause.textContent = speed ? '暫停' : '▶ 繼續';
+  $('veil').hidden = !(S && speed === 0 && open.has('started') && S.phase !== 'end');
+}
+$('speed').onclick = e => { const b = e.target.closest('button[data-x]'); if (!b) return; const x = +b.dataset.x; setSpeed(x === 0 && speed === 0 ? lastSpeed : x); };
+$('resumeBtn').onclick = () => setSpeed(lastSpeed);
+$('tabs').onclick = e => { const b = e.target.closest('button[data-go]'); if (b) $(b.dataset.go).scrollIntoView({ behavior: 'smooth', block: 'start' }); };
 $('ads').oninput = e => { if (S) { V3.setAds(S, +e.target.value); flags.adsTouched = true; render(); } };
 $('hire').onclick = () => { const err = V3.hire(S); if (err) toast(err); render(); };
 $('fire').onclick = () => { const err = V3.fire(S); if (err) toast(err); render(); };
