@@ -1,6 +1,6 @@
 // v3 原型的行為測試：數值調整後，這些「玩法承諾」必須仍然成立。
 const assert = require('node:assert/strict');
-const V3 = require('../public/prototype/v3/engine.js');
+const V3 = require('../public/engine.js');
 const { play } = require('./v3-strategies.cjs');
 const seeds = [7919, 15838, 23757];
 
