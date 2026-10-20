@@ -3,10 +3,11 @@
   "private": true,
   "scripts": {
     "build": "node scripts/build.mjs",
-    "test": "node source/test.cjs && node scripts/check-build.mjs",
+    "test": "node source/test.cjs && node scripts/check-build.mjs && node test/v3-engine.test.cjs",
     "dev": "python3 -m http.server 8766 --bind 127.0.0.1 -d public",
     "deploy:dry": "wrangler deploy --dry-run",
-    "deploy": "wrangler deploy"
+    "deploy": "wrangler deploy",
+    "sim": "node test/v3-strategies.cjs"
   },
   "devDependencies": {
     "wrangler": "^4.40.0"
