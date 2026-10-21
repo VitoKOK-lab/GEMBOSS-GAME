@@ -18,3 +18,11 @@ const xp=G.initial();G.start(xp);events(xp);G.expand(xp);assert.equal(xp.preExpe
 console.log('Report line totals and between-week expansion ledger: PASS');
 
 const chat=G.initial();assert.match(G.employeeStatus(chat,'regina').task,/裸石|採購/);assert.match(G.employeeStatus(chat,'founder-a').reply,/FB|客人/);G.plan(chat,'post');G.start(chat);G.advanceTime(chat,40000);assert.equal(chat.phase,'running');assert.match(G.employeeStatus(chat,'founder-a','progress').reply,/粉專商品故事|工作進度|這週已過/);assert.equal(G.employeeStatus(chat,'founder-a').shift,'working');assert.equal(chat.office,0);console.log('Contextual employee reports, work role, running-week status: PASS');
+
+// 因果：每張卡記下帶來多少營收；營收來源加總等於本週預估營收
+const cause=G.initial();G.plan(cause,'select');G.plan(cause,'post');G.start(cause);const parts=cause.run.results.reduce((n,r)=>n+r.contribution,0)+cause.run.sources.daily+cause.run.sources.synergy;assert(Math.abs(parts-cause.run.forecast.revenue)<1,'revenue sources must add up');assert(cause.run.results.every(r=>r.contribution>0&&r.personName));
+// 因果：事件報告記下處理人、選擇與數字變化
+G.advanceTime(cause,G.WEEK_MS);const ev=G.currentEvent(cause);const pick=ev.choices[0][0];const cash0=cause.cash;G.resolve(cause,pick);const rep=cause.run.eventReports.at(-1);assert.equal(rep.choice,ev.choices[0][1]);assert(Math.abs(rep.cash-(cause.cash-cash0))<.001);assert(ev.type==='news'||rep.who);
+// 泡泡：點了才有效果，效果由引擎計算
+const hv=G.initial();G.plan(hv,'post');G.start(hv);const mk=hv.run.results[0].person;assert.equal(G.bubbleKind(hv,mk),'inquiry');const c1=hv.cash,rev1=hv.run.eventRevenue;assert.match(G.harvest(hv,'inquiry',mk),/營收/);assert(hv.cash>c1&&hv.run.eventRevenue===rev1+6500);const b1=hv.brand;G.harvest(hv,'review',mk);assert(hv.brand>b1);assert.equal(hv.run.harvest.inquiry,1);const idle=G.initial();assert.equal(G.harvest(idle,'inquiry','regina'),'','no harvest outside the work week');
+console.log('Weekly causes (card contributions, event deltas) and harvest bubbles: PASS');
