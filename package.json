@@ -2,11 +2,11 @@
   "name": "tzgro-game",
   "private": true,
   "scripts": {
-    "test": "node test/v3-engine.test.cjs",
+    "build": "node scripts/build.mjs",
+    "test": "node source/test.cjs && node scripts/check-build.mjs",
     "dev": "python3 -m http.server 8766 --bind 127.0.0.1 -d public",
     "deploy:dry": "wrangler deploy --dry-run",
-    "deploy": "wrangler deploy",
-    "sim": "node test/v3-strategies.cjs"
+    "deploy": "wrangler deploy"
   },
   "devDependencies": {
     "wrangler": "^4.40.0"

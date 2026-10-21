@@ -2,7 +2,7 @@ from http.server import ThreadingHTTPServer, SimpleHTTPRequestHandler
 from pathlib import Path
 import os, webbrowser, urllib.request
 os.chdir(Path(__file__).resolve().parent / 'public')
-url='http://127.0.0.1:8766/'
+url='http://127.0.0.1:8766/tzgro-card-tycoon.html'
 try:
     server=ThreadingHTTPServer(('127.0.0.1',8766),SimpleHTTPRequestHandler)
 except OSError:
